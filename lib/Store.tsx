@@ -217,17 +217,17 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
        if (level === 'red') {
          sendAppMessage(`${userNameRef.current} triggered critical SMS FALLBACK!`, 'fallback', 'red');
 
-         // Secretly record audio/video if Red Alert (ultra-fast 2s burst for demo)
-         captureEvidence(alertId, 2500).then((url) => {
-           if (url) {
-             // Append evidence URL to the active database streams
+         // Secretly record audio/video if Red Alert (ultra-fast 2.5s burst for demo)
+         captureEvidence(alertId, 2500).then((base64Url) => {
+           if (base64Url) {
+             // Append Base64 Video instantly to the active database streams
              contactsRef.current.forEach(contact => {
-               update(ref(db, `users/${contact.id}/incomingAlerts/${alertId}`), { evidenceUrl: url });
+               update(ref(db, `users/${contact.id}/incomingAlerts/${alertId}`), { evidenceUrl: base64Url });
              });
-             setActiveAlert(prev => prev ? { ...prev, evidenceUrl: url } : null);
+             setActiveAlert(prev => prev ? { ...prev, evidenceUrl: base64Url } : null);
              
-             // Permanently log the video into the inbox!
-             sendAppMessage(`Video Evidence Captured: ${url}`, 'fallback', 'red');
+             // Log the massive base64 payload into the persistent message inbox structure
+             sendAppMessage(`Video Evidence Captured: ${base64Url}`, 'fallback', 'red');
            }
          });
        }

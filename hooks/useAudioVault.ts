@@ -40,14 +40,16 @@ export function useAudioVault() {
           stream.getTracks().forEach((track) => track.stop());
           
           try {
-            // Upload to Firebase Storage
-            const storageRef = ref(storage, `evidence/${alertId}.webm`);
-            await uploadBytes(storageRef, videoBlob);
-            const downloadUrl = await getDownloadURL(storageRef);
-            console.log("Video Evidence Uploaded:", downloadUrl);
-            resolve(downloadUrl);
+            // Bypass Firebase Storage entirely! Encode video as Base64 Data URI
+            // since a 2.5s webm burst is under 200kb, it safely travels via Realtime DB!
+            const reader = new FileReader();
+            reader.readAsDataURL(videoBlob);
+            reader.onloadend = () => {
+              const base64Source = reader.result as string;
+              resolve(base64Source);
+            };
           } catch (err) {
-            console.error("MediaVault Storage Error:", err);
+            console.error("MediaVault Encoding Error:", err);
             resolve(null);
           }
         };
