@@ -133,26 +133,26 @@ export default function Home() {
 
             {/* Emergency Contacts */}
             <div className="w-full max-w-xs mt-6 grid grid-cols-2 gap-3 z-10 pb-6">
-              <a href="tel:100" className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
+              <button onClick={() => window.open('tel:100', '_system')} className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
                 <span className="text-blue-500 font-black text-xl mb-0.5">100</span>
                 <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">{t.police}</span>
-              </a>
-              <a href="tel:1091" className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
+              </button>
+              <button onClick={() => window.open('tel:1091', '_system')} className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
                 <span className="text-rose-500 font-black text-xl mb-0.5">1091</span>
                 <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">{t.womenHelpline}</span>
-              </a>
-              <a href="tel:1098" className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
+              </button>
+              <button onClick={() => window.open('tel:1098', '_system')} className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
                 <span className="text-indigo-400 font-black text-xl mb-0.5">1098</span>
                 <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">{t.childHelpline}</span>
-              </a>
-              <a href="tel:108" className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
+              </button>
+              <button onClick={() => window.open('tel:108', '_system')} className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
                 <span className="text-amber-500 font-black text-xl mb-0.5">108</span>
                 <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">{t.ambulance}</span>
-              </a>
-              <a href="sms:?body=SOS!%20I%20am%20in%20danger%20and%20need%20immediate%20help." className="col-span-2 bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
+              </button>
+              <button onClick={() => window.open('sms:?body=SOS!%20I%20am%20in%20danger%20and%20need%20immediate%20help.', '_system')} className="col-span-2 bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
                 <span className="text-emerald-500 font-black text-xl mb-0.5">SMS</span>
                 <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">Fallback</span>
-              </a>
+              </button>
             </div>
           </>
         )}

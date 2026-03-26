@@ -211,6 +211,16 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     setActiveAlert(alert);
     
     if (!isMockEnvironment) {
+       // Check if offline to trigger immediate local SMS fallback
+       const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+
+       if (isOffline && level === 'red') {
+         const locString = location ? `${location.lat},${location.lng}` : '';
+         const gmapsLink = locString ? `https://maps.google.com/?q=${locString}` : 'Unknown location';
+         const smsBody = `SOS! I am offline and in danger. My last location: ${gmapsLink}`;
+         window.open(`sms:?body=${encodeURIComponent(smsBody)}`, '_system');
+       }
+
        // Broadcast directly to trusted contacts incoming alerts queue
        contactsRef.current.forEach(contact => {
           set(ref(db, `users/${contact.id}/incomingAlerts/${alertId}`), alert);
