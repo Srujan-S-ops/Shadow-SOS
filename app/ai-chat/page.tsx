@@ -83,7 +83,7 @@ export default function RakshaAIPage() {
       </header>
 
       {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto p-4 pb-32 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 pb-48 space-y-6">
         {errorText && (
           <div className="bg-red-950/50 border border-red-500/50 p-4 rounded-2xl flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
@@ -126,7 +126,7 @@ export default function RakshaAIPage() {
       </div>
 
       {/* Input Area */}
-      <div className="fixed bottom-0 left-0 right-0 bg-neutral-950/80 backdrop-blur-xl border-t border-neutral-800 p-4 pb-safe">
+      <div className="fixed bottom-[72px] left-0 right-0 bg-neutral-950/80 backdrop-blur-xl border-t border-neutral-800 p-4">
         <form 
           className="max-w-3xl mx-auto flex items-end gap-2"
           onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
