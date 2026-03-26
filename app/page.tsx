@@ -27,7 +27,7 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-black px-4 py-8 pb-24 relative overflow-hidden flex flex-col">
+    <main className="min-h-screen bg-black px-4 py-8 pb-24 relative overflow-x-hidden flex flex-col">
       {/* Overlays */}
       <EmergencyOverlay />
       <IncomingAlert />
