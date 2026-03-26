@@ -1,24 +1,20 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { Phone, PhoneOff } from 'lucide-react';
-import { useRingtone } from '@/hooks/useRingtone';
+import React, { useState, useEffect, useRef } from 'react';
+import { Phone, PhoneOff, MicOff, Grid, Volume2, Plus, Video, User } from 'lucide-react';
 
 export default function FakeCallPage() {
   const [caller, setCaller] = useState('Mom');
   const [status, setStatus] = useState<'incoming' | 'active' | 'ended'>('incoming');
   const [time, setTime] = useState(0);
-  const { playRingtone, stopRingtone } = useRingtone();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (status === 'incoming') {
-      // Browser AudioContext policy requires a slight delay or user interaction. 
-      // Since the user clicked a link to get here, it usually auto-plays.
-      playRingtone();
-    } else {
-      stopRingtone();
+    if (status === 'incoming' && audioRef.current) {
+      audioRef.current.play().catch(e => console.log('Autoplay prevented:', e));
+    } else if (audioRef.current) {
+      audioRef.current.pause();
     }
-    return () => stopRingtone();
-  }, [status, playRingtone, stopRingtone]);
+  }, [status]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -53,34 +49,98 @@ export default function FakeCallPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-between pb-20 pt-32 px-6">
+    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-between pb-16 pt-32 px-6 font-sans">
       
+      {/* Hidden Proper MP3 Ringtone */}
+      <audio 
+        ref={audioRef} 
+        src="https://www.myinstants.com/media/sounds/iphone-ringtone.mp3" 
+        loop 
+        preload="auto" 
+      />
+
       {/* Caller Info */}
-      <div className="text-center">
-        <div className="w-32 h-32 rounded-full bg-slate-700 mx-auto mb-6 flex items-center justify-center text-5xl text-slate-400 font-light border-4 border-slate-800">
-          {caller[0].toUpperCase()}
-        </div>
-        <h1 className="text-4xl text-white font-medium mb-2">{caller}</h1>
-        <p className="text-xl text-slate-400">
-          {status === 'incoming' ? 'Incoming... (Fake Call)' : formatTime(time)}
+      <div className="text-center w-full">
+        <h1 className="text-4xl text-white font-medium mb-3 tracking-wide">{caller}</h1>
+        <p className="text-lg text-slate-400 font-light">
+          {status === 'incoming' ? 'mobile' : formatTime(time)}
         </p>
       </div>
 
-      {/* Actions */}
-      <div className="w-full max-w-sm flex justify-between px-8">
-        <button 
-          onClick={handleDecline}
-          className="w-20 h-20 rounded-full bg-red-500 hover:bg-red-400 flex items-center justify-center shadow-lg transform active:scale-95 transition"
-        >
-          <PhoneOff className="w-10 h-10 text-white" />
-        </button>
+      {/* Active Call UI Grid */}
+      {status === 'active' && (
+        <div className="w-full max-w-[280px] mb-8 mt-auto">
+          <div className="grid grid-cols-3 gap-y-10 gap-x-6">
+            <div className="flex flex-col items-center gap-2 group cursor-pointer">
+              <button className="w-[72px] h-[72px] rounded-full bg-slate-800 flex items-center justify-center text-white active:bg-white active:text-black transition">
+                <MicOff className="w-7 h-7" />
+              </button>
+              <span className="text-[13px] text-slate-300">mute</span>
+            </div>
+            <div className="flex flex-col items-center gap-2 group cursor-pointer">
+              <button className="w-[72px] h-[72px] rounded-full bg-slate-800 flex items-center justify-center text-white active:bg-white active:text-black transition">
+                <Grid className="w-7 h-7" />
+              </button>
+              <span className="text-[13px] text-slate-300">keypad</span>
+            </div>
+            <div className="flex flex-col items-center gap-2 group cursor-pointer">
+              <button className="w-[72px] h-[72px] rounded-full bg-slate-800 flex items-center justify-center text-white active:bg-white active:text-black transition">
+                <Volume2 className="w-7 h-7" />
+              </button>
+              <span className="text-[13px] text-slate-300">speaker</span>
+            </div>
+            <div className="flex flex-col items-center gap-2 group cursor-pointer">
+              <button className="w-[72px] h-[72px] rounded-full bg-slate-800 flex items-center justify-center text-white active:bg-white active:text-black transition">
+                <Plus className="w-7 h-7" />
+              </button>
+              <span className="text-[13px] text-slate-300">add call</span>
+            </div>
+            <div className="flex flex-col items-center gap-2 group cursor-pointer">
+              <button className="w-[72px] h-[72px] rounded-full bg-slate-800 flex items-center justify-center text-slate-500 transition">
+                <Video className="w-7 h-7" />
+              </button>
+              <span className="text-[13px] text-slate-500">FaceTime</span>
+            </div>
+            <div className="flex flex-col items-center gap-2 group cursor-pointer">
+              <button className="w-[72px] h-[72px] rounded-full bg-slate-800 flex items-center justify-center text-white active:bg-white active:text-black transition">
+                <User className="w-7 h-7" />
+              </button>
+              <span className="text-[13px] text-slate-300">contacts</span>
+            </div>
+          </div>
+        </div>
+      )}
 
-        {status === 'incoming' && (
+      {/* Main Bottom Actions */}
+      <div className={`w-full max-w-[280px] flex px-2 ${status === 'incoming' ? 'justify-between' : 'justify-center'} mt-auto pb-8`}>
+        
+        {status === 'incoming' ? (
+          <>
+            <div className="flex flex-col items-center gap-3">
+              <button 
+                onClick={handleDecline}
+                className="w-[76px] h-[76px] rounded-full bg-red-500 hover:bg-red-400 flex items-center justify-center transform active:scale-95 transition"
+              >
+                <PhoneOff className="w-9 h-9 text-white" />
+              </button>
+              <span className="text-white text-sm">Decline</span>
+            </div>
+            <div className="flex flex-col items-center gap-3">
+              <button 
+                onClick={handleAccept}
+                className="w-[76px] h-[76px] rounded-full bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center transform active:scale-95 transition"
+              >
+                <Phone className="w-9 h-9 text-white animate-pulse" />
+              </button>
+              <span className="text-white text-sm">Accept</span>
+            </div>
+          </>
+        ) : (
           <button 
-            onClick={handleAccept}
-            className="w-20 h-20 rounded-full bg-emerald-500 hover:bg-emerald-400 flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.5)] transform active:scale-95 transition animate-pulse"
+            onClick={handleDecline}
+            className="w-[76px] h-[76px] rounded-full bg-red-500 hover:bg-red-400 flex items-center justify-center transform active:scale-95 transition mt-4"
           >
-            <Phone className="w-10 h-10 text-white" />
+            <PhoneOff className="w-9 h-9 text-white" />
           </button>
         )}
       </div>
