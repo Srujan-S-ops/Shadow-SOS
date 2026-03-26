@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-500: #e11d48;
+  --color-primary-600: #be123c;
+  --color-background: #0f172a;
+  --color-surface: #1e293b;
+  --color-text-main: #f8fafc;
+  --color-text-muted: #94a3b8;
+  
+  --animate-siren: siren 1s infinite alternate;
+  --animate-shake: shake 0.5s;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text-main);
+    font-family: Arial, Helvetica, sans-serif;
+  }
+}
+
+@keyframes siren {
+  0% { box-shadow: 0 0 20px rgba(225, 29, 72, 0.4); background-color: rgba(225, 29, 72, 0.1); }
+  100% { box-shadow: 0 0 60px rgba(225, 29, 72, 0.9); background-color: rgba(225, 29, 72, 0.3); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
+}
