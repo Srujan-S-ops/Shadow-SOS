@@ -5,7 +5,7 @@ import { useLocation } from '@/hooks/useLocation';
 import { MapPin, ShieldAlert, XOctagon } from 'lucide-react';
 
 export default function EmergencyOverlay() {
-  const { activeAlert, stopSOS, updateLocation, contacts } = useAppStore();
+  const { activeAlert, stopSOS, updateLocation, contacts, sendAppMessage } = useAppStore();
   const { location, startTracking, stopTracking, error } = useLocation();
 
   useEffect(() => {
@@ -104,8 +104,11 @@ export default function EmergencyOverlay() {
             onClick={() => {
               const msg = localStorage.getItem('customSmsMessage') || "HELP! I am in danger. Track my location here:";
               const locLink = location ? ` https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}` : '';
+              const fullMsg = msg + locLink;
               const phones = contacts.map(c => c.phone).filter(Boolean).join(','); 
-              window.location.href = `sms:${phones}?body=${encodeURIComponent(msg + locLink)}`;
+              
+              sendAppMessage(fullMsg, 'fallback');
+              window.location.href = `sms:${phones}?body=${encodeURIComponent(fullMsg)}`;
             }}
             className="w-full relative group overflow-hidden rounded-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(234,88,12,0.5)]"
           >

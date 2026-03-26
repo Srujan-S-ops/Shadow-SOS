@@ -12,6 +12,15 @@ export type Contact = {
   phone?: string;
 };
 
+export type AppMessage = {
+  id: string;
+  senderId: string;
+  senderName: string;
+  text: string;
+  timestamp: number;
+  type: 'alert' | 'fallback' | 'system';
+};
+
 export type ThreatLevel = 'yellow' | 'orange' | 'red';
 
 export type AlertEvent = {
@@ -38,6 +47,8 @@ interface AppContextType {
   stopIncomingAlarm: () => void;
   updateLocation: (lat: number, lng: number) => void;
   logout: () => void;
+  inbox: AppMessage[];
+  sendAppMessage: (text: string, type: 'alert' | 'fallback' | 'system') => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -49,6 +60,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [activeAlert, setActiveAlert] = useState<AlertEvent | null>(null);
   const [incomingAlert, setIncomingAlert] = useState<AlertEvent | null>(null);
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [inbox, setInbox] = useState<AppMessage[]>([]);
   const { captureEvidence } = useAudioVault();
   
   const router = useRouter();
@@ -86,6 +98,19 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
             setContacts(snapshot.val() || []);
           } else {
             setContacts([]);
+          }
+        });
+
+        // Listen to Inbox Messages
+        const inboxRefObj = ref(db, `users/${user.uid}/messages`);
+        onValue(inboxRefObj, (snapshot) => {
+          if (snapshot.exists()) {
+            const msgs = snapshot.val();
+            // Convert to array and sort by timestamp descending (newest first)
+            const sorted = Object.values(msgs).sort((a: any, b: any) => b.timestamp - a.timestamp) as AppMessage[];
+            setInbox(sorted);
+          } else {
+            setInbox([]);
           }
         });
 
@@ -144,6 +169,22 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const sendAppMessage = (text: string, type: 'alert' | 'fallback' | 'system') => {
+    if (!userIdRef.current || isMockEnvironment) return;
+    const msgId = `msg_${Date.now()}`;
+    const msg: AppMessage = {
+      id: msgId,
+      senderId: userIdRef.current,
+      senderName: userNameRef.current,
+      text,
+      timestamp: Date.now(),
+      type
+    };
+    contactsRef.current.forEach(contact => {
+      set(ref(db, `users/${contact.id}/messages/${msgId}`), msg);
+    });
+  };
+
   const triggerSOS = (level: ThreatLevel = 'red') => {
     if (!userIdRef.current) return;
     const alertId = `alert_${userIdRef.current}_${Date.now()}`;
@@ -163,6 +204,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
        contactsRef.current.forEach(contact => {
           set(ref(db, `users/${contact.id}/incomingAlerts/${alertId}`), alert);
        });
+
+       // Also log it into their inbox
+       sendAppMessage(`${userNameRef.current} triggered a ${level.toUpperCase()} alert!`, 'alert');
 
        // Secretly record audio if Red Alert
        if (level === 'red') {
@@ -226,7 +270,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     <AppContext.Provider value={{
       userId, userName, contacts, addContact, removeContact,
       activeAlert, triggerSOS, stopSOS, incomingAlert, stopIncomingAlarm,
-      updateLocation, logout
+      updateLocation, logout, inbox, sendAppMessage
     }}>
       {children}
     </AppContext.Provider>
