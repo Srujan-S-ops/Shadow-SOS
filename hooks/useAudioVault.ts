@@ -10,10 +10,19 @@ export function useAudioVault() {
   const captureEvidence = useCallback(async (alertId: string, durationMs: number = 5000): Promise<string | null> => {
     try {
       // aggressively request dual-modality: Audio + Front-facing Video
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: true, 
-        video: { facingMode: "user" } 
-      });
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          audio: true, 
+          video: { facingMode: "user" } 
+        });
+      } catch (err) {
+        console.warn("Front camera constraint failed (likely testing on Desktop). Falling back to default camera:", err);
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          audio: true, 
+          video: true 
+        });
+      }
       
       const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
       mediaRecorderRef.current = mediaRecorder;
