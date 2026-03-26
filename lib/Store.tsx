@@ -1,14 +1,16 @@
 "use client";
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { auth, db, isMockEnvironment } from '@/lib/firebase';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { ref, onValue, set } from 'firebase/database';
 
-// Contact type
 export type Contact = {
   id: string;
   name: string;
-  phone: string;
+  phone?: string;
 };
 
-// Alert type
 export type AlertEvent = {
   alertId: string;
   fromUser: string;
@@ -21,7 +23,6 @@ export type AlertEvent = {
 interface AppContextType {
   userId: string;
   userName: string;
-  setUserName: (name: string) => void;
   contacts: Contact[];
   addContact: (contact: Contact) => void;
   removeContact: (id: string) => void;
@@ -31,101 +32,180 @@ interface AppContextType {
   incomingAlert: AlertEvent | null;
   stopIncomingAlarm: () => void;
   updateLocation: (lat: number, lng: number) => void;
+  logout: () => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const [userId] = useState(() => 
-    typeof window !== 'undefined' ? localStorage.getItem('userId') || `user_${Math.random().toString(36).substring(2, 9)}` : 'user_123'
-  );
-  const [userName, setUserNameState] = useState('Safety User');
+  const [userId, setUserId] = useState<string>('');
+  const [userName, setUserName] = useState('');
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [activeAlert, setActiveAlert] = useState<AlertEvent | null>(null);
   const [incomingAlert, setIncomingAlert] = useState<AlertEvent | null>(null);
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
+  
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const contactsRef = useRef(contacts);
+  contactsRef.current = contacts;
+  const userIdRef = useRef(userId);
+  userIdRef.current = userId;
+  const userNameRef = useRef(userName);
+  userNameRef.current = userName;
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('userId', userId);
-      const savedContacts = localStorage.getItem('contacts');
-      if (savedContacts) setContacts(JSON.parse(savedContacts));
+    if (isMockEnvironment) {
+       const mockId = typeof window !== 'undefined' ? localStorage.getItem('userId') || `user_${Math.random().toString(36).substring(2, 9)}` : 'user_123';
+       setUserId(mockId);
+       setUserName('Mock User');
+       if (typeof window !== 'undefined') {
+         localStorage.setItem('userId', mockId);
+         const savedContacts = localStorage.getItem('contacts');
+         if (savedContacts) setContacts(JSON.parse(savedContacts));
+       }
+       return;
     }
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+        setUserName(user.displayName || 'User');
+        
+        // Listen to Contacts from Firebase Realtime DB
+        const contactsRefObj = ref(db, `users/${user.uid}/contacts`);
+        onValue(contactsRefObj, (snapshot) => {
+          if (snapshot.exists()) {
+            setContacts(snapshot.val() || []);
+          } else {
+            setContacts([]);
+          }
+        });
+
+      } else {
+        setUserId('');
+        // Redirect to login if unauthenticated
+        if (pathname !== '/login' && pathname !== '/signup') {
+          router.push('/login');
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [pathname, router]);
+
+  // Listen to incoming alerts if we are logged in
+  useEffect(() => {
+    if (isMockEnvironment || !userId) return;
+
+    const incomingAlertsRef = ref(db, `users/${userId}/incomingAlerts`);
+    const unsubscribe = onValue(incomingAlertsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const alerts = snapshot.val();
+        // Find the first active one
+        const active = Object.values(alerts).find((a: any) => a.status === 'active') as AlertEvent | undefined;
+        if (active) {
+          setIncomingAlert(active);
+        } else {
+          setIncomingAlert(null); // All stopped
+        }
+      } else {
+        setIncomingAlert(null);
+      }
+    });
+
+    return () => unsubscribe();
   }, [userId]);
 
-  const setUserName = (name: string) => {
-    setUserNameState(name);
-  };
-
-  const addContact = (contact: Contact) => {
+  const addContact = async (contact: Contact) => {
     const updated = [...contacts, contact];
     setContacts(updated);
-    if (typeof window !== 'undefined') localStorage.setItem('contacts', JSON.stringify(updated));
+    if (!isMockEnvironment && userId) {
+      await set(ref(db, `users/${userId}/contacts`), updated);
+    } else if (typeof window !== 'undefined') {
+      localStorage.setItem('contacts', JSON.stringify(updated));
+    }
   };
 
-  const removeContact = (id: string) => {
+  const removeContact = async (id: string) => {
     const updated = contacts.filter(c => c.id !== id);
     setContacts(updated);
-    if (typeof window !== 'undefined') localStorage.setItem('contacts', JSON.stringify(updated));
+    if (!isMockEnvironment && userId) {
+      await set(ref(db, `users/${userId}/contacts`), updated);
+    } else if (typeof window !== 'undefined') {
+      localStorage.setItem('contacts', JSON.stringify(updated));
+    }
   };
 
   const triggerSOS = () => {
+    if (!userIdRef.current) return;
+    const alertId = `alert_${userIdRef.current}_${Date.now()}`;
     const alert: AlertEvent = {
-      alertId: `alert_${Date.now()}`,
-      fromUser: userId,
-      senderName: userName,
+      alertId,
+      fromUser: userIdRef.current,
+      senderName: userNameRef.current,
       location,
       timestamp: Date.now(),
       status: 'active'
     };
     setActiveAlert(alert);
     
-    // In a real app, this sends to Firebase. 
-    // Here we simulate the broadcast.
-    console.log("SOS TRIGGERED! Broadcasting to contacts:", contacts);
+    if (!isMockEnvironment) {
+       // Broadcast directly to trusted contacts incoming alerts queue
+       contactsRef.current.forEach(contact => {
+          set(ref(db, `users/${contact.id}/incomingAlerts/${alertId}`), alert);
+       });
+    } else {
+      console.log("SOS TRIGGERED! Broadcasting to contacts:", contactsRef.current);
+    }
   };
 
   const stopSOS = () => {
     if (activeAlert) {
+      if (!isMockEnvironment && userIdRef.current) {
+        contactsRef.current.forEach(contact => {
+           set(ref(db, `users/${contact.id}/incomingAlerts/${activeAlert.alertId}/status`), 'stopped');
+        });
+      }
       setActiveAlert(null);
       console.log("SOS STOPPED!");
     }
   };
 
   const stopIncomingAlarm = () => {
+    // If the receiver hit 'STOP' locally just mute it locally
     setIncomingAlert(null);
   };
 
   const updateLocation = React.useCallback((lat: number, lng: number) => {
     setLocation({ lat, lng });
-    setActiveAlert(prev => prev ? { ...prev, location: { lat, lng } } : null);
+    setActiveAlert(prev => {
+      if (prev) {
+        if (!isMockEnvironment && userIdRef.current) {
+          contactsRef.current.forEach(c => {
+             set(ref(db, `users/${c.id}/incomingAlerts/${prev.alertId}/location`), {lat, lng});
+          });
+        }
+        return { ...prev, location: { lat, lng } };
+      }
+      return null;
+    });
   }, []);
 
-  // Mock incoming alert for testing the hackathon MVP
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Pressing 'I' triggers a mock incoming alert
-      if (e.key === 'i' || e.key === 'I') {
-        setIncomingAlert({
-          alertId: `mock_${Date.now()}`,
-          fromUser: 'mock_user',
-          senderName: 'Jane Doe',
-          location: { lat: 34.0522, lng: -118.2437 },
-          timestamp: Date.now(),
-          status: 'active'
-        });
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  const logout = () => {
+    if (!isMockEnvironment) {
+      signOut(auth);
+    } else {
+      router.push('/login');
+    }
+  };
 
   return (
     <AppContext.Provider value={{
-      userId, userName, setUserName, contacts, addContact, removeContact,
+      userId, userName, contacts, addContact, removeContact,
       activeAlert, triggerSOS, stopSOS, incomingAlert, stopIncomingAlarm,
-      updateLocation
+      updateLocation, logout
     }}>
       {children}
     </AppContext.Provider>

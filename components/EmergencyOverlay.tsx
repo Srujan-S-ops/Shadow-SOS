@@ -5,7 +5,7 @@ import { useLocation } from '@/hooks/useLocation';
 import { MapPin, ShieldAlert, XOctagon } from 'lucide-react';
 
 export default function EmergencyOverlay() {
-  const { activeAlert, stopSOS, updateLocation } = useAppStore();
+  const { activeAlert, stopSOS, updateLocation, contacts } = useAppStore();
   const { location, startTracking, stopTracking, error } = useLocation();
 
   useEffect(() => {
@@ -56,15 +56,29 @@ export default function EmergencyOverlay() {
           {error && <div className="text-xs text-rose-500 mt-2">{error}</div>}
         </div>
 
-        <button
-          onClick={stopSOS}
-          className="w-full relative group overflow-hidden rounded-full bg-red-600 hover:bg-red-500 text-white font-bold py-4 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(220,38,38,0.5)]"
-        >
-          <div className="flex items-center justify-center gap-2">
-            <XOctagon className="w-6 h-6" />
-            STOP EMERGENCY
-          </div>
-        </button>
+        <div className="w-full flex flex-col gap-3">
+          <button
+            onClick={() => {
+              const msg = localStorage.getItem('customSmsMessage') || "HELP! I am in danger. Track my location here:";
+              const locLink = location ? ` https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}` : '';
+              const phones = contacts.map(c => c.phone).filter(Boolean).join(','); 
+              window.location.href = `sms:${phones}?body=${encodeURIComponent(msg + locLink)}`;
+            }}
+            className="w-full relative group overflow-hidden rounded-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(234,88,12,0.5)]"
+          >
+            SEND SMS FALLBACK
+          </button>
+          
+          <button
+            onClick={stopSOS}
+            className="w-full relative group overflow-hidden rounded-full bg-red-600 hover:bg-red-500 text-white font-bold py-4 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-[0_0_15px_rgba(220,38,38,0.5)]"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <XOctagon className="w-6 h-6" />
+              STOP EMERGENCY
+            </div>
+          </button>
+        </div>
 
       </div>
     </div>
