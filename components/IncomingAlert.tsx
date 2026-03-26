@@ -1,20 +1,26 @@
 "use client";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppStore } from '@/lib/Store';
 import { useAudioSiren } from '@/hooks/useAudioSiren';
-import { AlertCircle, BellOff, Navigation } from 'lucide-react';
+import { AlertCircle, BellOff, Navigation, XCircle, VolumeX } from 'lucide-react';
 
 export default function IncomingAlert() {
   const { incomingAlert, stopIncomingAlarm } = useAppStore();
   const { playSiren, stopSiren } = useAudioSiren();
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
-    if (incomingAlert && incomingAlert.level === 'red') {
+    // Reset mute state when a new alert comes in
+    if (!incomingAlert) setIsMuted(false);
+  }, [incomingAlert]);
+
+  useEffect(() => {
+    if (incomingAlert && incomingAlert.level === 'red' && !isMuted) {
       playSiren(); // Only Nuclear Red plays the loud siren
     } else {
       stopSiren();
     }
-  }, [incomingAlert, playSiren, stopSiren]);
+  }, [incomingAlert, isMuted, playSiren, stopSiren]);
 
   if (!incomingAlert) return null;
 
@@ -121,13 +127,28 @@ export default function IncomingAlert() {
             </div>
           )}
           
-          <button
-            onClick={stopIncomingAlarm}
-            className="bg-slate-900 border-2 border-rose-500 text-white w-full flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-lg hover:bg-slate-800 transition-colors"
-          >
-            <BellOff className="w-6 h-6 text-rose-400" />
-            STOP ALARM Sound
-          </button>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => setIsMuted(true)}
+              disabled={isMuted}
+              className={`border-2 text-white w-full flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-lg transition-colors ${
+                isMuted 
+                  ? 'bg-slate-800 border-slate-700 opacity-50 cursor-not-allowed' 
+                  : 'bg-black border-yellow-500 hover:bg-slate-900 shadow-[0_0_15px_rgba(234,179,8,0.3)]'
+              }`}
+            >
+              <VolumeX className={`w-6 h-6 ${isMuted ? 'text-slate-500' : 'text-yellow-400'}`} />
+              {isMuted ? 'SIREN MUTED' : 'MUTE SIREN ONLY'}
+            </button>
+
+            <button
+              onClick={stopIncomingAlarm}
+              className="bg-slate-900 border-2 border-slate-700 text-white w-full flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-lg hover:bg-rose-950 hover:border-rose-500 transition-colors"
+            >
+              <BellOff className="w-6 h-6 text-slate-400" />
+              DISMISS FULL ALERT
+            </button>
+          </div>
         </div>
       </div>
 
