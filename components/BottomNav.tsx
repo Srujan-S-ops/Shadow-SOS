@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShieldAlert, Map as MapIcon, Grid, PlaySquare, ShoppingBag, Navigation } from 'lucide-react';
+import { ShieldAlert, Map as MapIcon, Grid, PlaySquare, ShoppingBag, Navigation, Sparkles } from 'lucide-react';
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -39,11 +39,11 @@ export default function BottomNav() {
         </Link>
 
         <Link 
-          href="/shop" 
-          className={`flex flex-col flex-1 items-center gap-1.5 transition-colors ${pathname === '/shop' ? 'text-emerald-500' : 'text-neutral-500 hover:text-neutral-300'}`}
+          href="/ai-chat" 
+          className={`flex flex-col flex-1 items-center gap-1.5 transition-colors ${pathname === '/ai-chat' ? 'text-rose-500' : 'text-neutral-500 hover:text-neutral-300'}`}
         >
-          <ShoppingBag className="w-5 h-5" />
-          <span className="text-[9px] uppercase font-bold tracking-widest">Shop</span>
+          <Sparkles className={`w-5 h-5 ${pathname === '/ai-chat' ? 'animate-pulse' : ''}`} />
+          <span className="text-[9px] uppercase font-bold tracking-widest leading-[10px] text-center">Raksha<br/>AI</span>
         </Link>
         
         <Link 
