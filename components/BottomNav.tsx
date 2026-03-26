@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShieldAlert, Map as MapIcon, Grid, PlaySquare, ShoppingBag } from 'lucide-react';
+import { ShieldAlert, Map as MapIcon, Grid, PlaySquare, ShoppingBag, Navigation } from 'lucide-react';
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -53,6 +53,18 @@ export default function BottomNav() {
           <Grid className="w-5 h-5" />
           <span className="text-[9px] uppercase font-bold tracking-widest">Tools</span>
         </Link>
+
+        {/* 6th Button: GMaps Safe Route */}
+        <a 
+          href="https://www.google.com/maps/dir/?api=1&destination=Police+Station"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex flex-col flex-1 items-center gap-1.5 transition-colors text-blue-400 hover:text-blue-300"
+          title="Nearest Safe Route"
+        >
+          <Navigation className="w-5 h-5" />
+          <span className="text-[9px] uppercase font-bold tracking-widest">Route</span>
+        </a>
 
       </div>
     </nav>
