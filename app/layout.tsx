@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HerGuard AI",
+  title: "Raksha",
   description: "Advanced Women's Safety Application",
 };
 

@@ -50,6 +50,10 @@ interface AppContextType {
   logout: () => void;
   inbox: AppMessage[];
   sendAppMessage: (text: string, type: 'alert' | 'fallback' | 'system', priority?: ThreatLevel) => void;
+  shakeAlertActive: boolean;
+  setShakeAlertActive: (val: boolean) => void;
+  language: string;
+  setLanguage: (lang: string) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -62,6 +66,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [incomingAlert, setIncomingAlert] = useState<AlertEvent | null>(null);
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
   const [inbox, setInbox] = useState<AppMessage[]>([]);
+  const [shakeAlertActive, setShakeAlertActive] = useState(false);
+  const [language, setLanguage] = useState<string>('en');
   const { captureEvidence } = useAudioVault();
   
   const router = useRouter();
@@ -279,6 +285,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <AppContext.Provider value={{
+      shakeAlertActive, setShakeAlertActive, language, setLanguage,
       userId, userName, contacts, addContact, removeContact,
       activeAlert, triggerSOS, stopSOS, incomingAlert, stopIncomingAlarm,
       updateLocation, logout, inbox, sendAppMessage

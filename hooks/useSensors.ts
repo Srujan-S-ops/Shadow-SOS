@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useAppStore } from '@/lib/Store';
 
 export const useSensors = () => {
-  const { triggerSOS, activeAlert } = useAppStore();
+  const { triggerSOS, activeAlert, setShakeAlertActive, shakeAlertActive } = useAppStore();
   const recognitionRef = useRef<any>(null);
   const lastX = useRef<number | null>(null);
   const lastY = useRef<number | null>(null);
@@ -26,8 +26,10 @@ export const useSensors = () => {
         const deltaZ = Math.abs(lastZ.current - z);
         
         if (deltaX > SHAKE_THRESHOLD || deltaY > SHAKE_THRESHOLD || deltaZ > SHAKE_THRESHOLD) {
-          console.log("SHAKE DETECTED");
-          triggerSOS();
+          if (!shakeAlertActive) {
+            console.log("SHAKE DETECTED");
+            setShakeAlertActive(true);
+          }
         }
       }
       
@@ -89,5 +91,35 @@ export const useSensors = () => {
         recognitionRef.current.stop();
       }
     };
+  }, [activeAlert, triggerSOS]);
+
+  // 3. Volume Up SOS Detection
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    let pressTimestamps: number[] = [];
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Hardware volume buttons might map to VolumeUp/AudioVolumeUp. 
+      // Also map 'v' or 'ArrowUp' as a fallback/debug key for easy web emulation.
+      if (e.key === 'AudioVolumeUp' || e.key === 'VolumeUp' || e.key === 'v' || e.key === 'ArrowUp') {
+        const now = Date.now();
+        pressTimestamps.push(now);
+        
+        // Keep only presses within the last 3000ms
+        pressTimestamps = pressTimestamps.filter(t => now - t <= 3000);
+        
+        if (pressTimestamps.length >= 5) {
+          if (!activeAlert) {
+            console.log("VOLUME OS TRIGGERED!");
+            triggerSOS('red');
+          }
+          pressTimestamps = []; // reset count
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeAlert, triggerSOS]);
 };
