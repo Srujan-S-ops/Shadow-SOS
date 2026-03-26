@@ -70,7 +70,11 @@ export default function SafeMapViewer({ userLat, userLng }: SafeMapViewerProps) 
           else if (type === 'pharmacy') { friendlyName = 'Pharmacy'; icon = pharmacyIcon; }
           else if (type === 'townhall') { friendlyName = 'Govt Office'; icon = govIcon; }
           
-          const name = el.tags?.name || friendlyName;
+          let name = el.tags?.name || friendlyName;
+          
+          if (name.toLowerCase() === 'fire' || name.toLowerCase() === 'fire station') {
+            name = 'Fire Station';
+          }
           
           return { id: el.id, lat, lon, name, type, friendlyName, icon };
         }).filter((p: any) => p.lat && p.lon);
