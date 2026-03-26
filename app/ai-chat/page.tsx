@@ -38,28 +38,54 @@ export default function RakshaAIPage() {
     setErrorText('');
 
     try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: chatHistory })
-      });
-      
-      const textResponse = await res.text();
-      let data;
-      try {
-        data = JSON.parse(textResponse);
-      } catch (e) {
-        throw new Error("Raksha AI server returned an invalid response. Please try again or check your API key.");
+      const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+      if (!apiKey) {
+        throw new Error("API Key missing! Please add NEXT_PUBLIC_GEMINI_API_KEY to your Vercel Environment Variables.");
       }
+
+      const systemPrompt = "You are Raksha AI, an empathetic, highly knowledgeable, and multilingual safety advocate for women. Your primary goal is to provide immediate, actionable safety advice, explain legal rights clearly, and offer emotional support. You must automatically detect the user's language based on their input and reply in that EXACT same language fluently. Keep your replies concise, supportive, and profoundly focused on women's safety.";
+      
+      let history = chatHistory.slice(0, -1).map((m: any) => ({
+        role: m.role === 'user' ? 'user' : 'model',
+        parts: [{ text: m.content }]
+      }));
+
+      // Gemini requires the first message in history to be from 'user'
+      while (history.length > 0 && history[0].role !== 'user') {
+        history.shift();
+      }
+      
+      const lastMessage = chatHistory[chatHistory.length - 1].content;
+
+      // Call Gemini REST API directly to bypass SDK browser restrictions and avoid bundle bloat
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          system_instruction: {
+            parts: [{ text: systemPrompt }]
+          },
+          contents: [
+            ...history,
+            { role: 'user', parts: [{ text: lastMessage }] }
+          ]
+        })
+      });
+
+      const data = await res.json();
       
       if (!res.ok) {
-        throw new Error(data.error || "Failed to connect to Raksha AI");
+        throw new Error(data.error?.message || "Failed to connect to Raksha AI");
       }
+
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "I am currently unable to process that request.";
 
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'model',
-        content: data.reply
+        content: text
       }]);
     } catch (err: any) {
       console.error(err);
