@@ -65,10 +65,16 @@ export default function MessagesPage() {
                   <span className="font-bold text-lg text-white">{msg.senderName}</span>
                   <span className="text-xs text-neutral-500">{formatTime(msg.timestamp)}</span>
                 </div>
-                <p className="text-neutral-300 leading-relaxed text-sm">
-                  {msg.text}
-                </p>
-                {msg.type === 'fallback' && (
+                {msg.text.startsWith('Video Evidence Captured:') ? (
+                  <div className="mt-2 w-full rounded-xl overflow-hidden border border-rose-500/30">
+                    <video src={msg.text.split('Video Evidence Captured: ')[1]} controls className="w-full max-h-[150px] object-cover bg-black" />
+                  </div>
+                ) : (
+                  <p className="text-neutral-300 leading-relaxed text-sm">
+                    {msg.text}
+                  </p>
+                )}
+                {msg.type === 'fallback' && !msg.text.startsWith('Video Evidence') && (
                   <div className="mt-3 inline-block bg-orange-500/10 text-orange-400 border border-orange-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                     SMS Fallback Broadcast
                   </div>
