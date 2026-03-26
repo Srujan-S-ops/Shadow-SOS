@@ -44,7 +44,18 @@ export default function MessagesPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {inbox.map(msg => (
+          {[...inbox].sort((a, b) => {
+            const pVal = (p?: string) => {
+              if (p === 'red') return 3;
+              if (p === 'orange') return 2;
+              if (p === 'yellow') return 1;
+              return 0;
+            };
+            const pa = pVal(a.priority);
+            const pb = pVal(b.priority);
+            if (pa !== pb) return pb - pa;
+            return b.timestamp - a.timestamp;
+          }).map(msg => (
             <div key={msg.id} className="bg-neutral-900 border border-neutral-800 p-5 rounded-2xl flex gap-4 animate-in fade-in slide-in-from-bottom-2">
               <div className="pt-1">
                 {getIcon(msg.type)}

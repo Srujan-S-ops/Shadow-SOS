@@ -5,10 +5,10 @@ import { useAppStore } from '@/lib/Store';
 import { useSensors } from '@/hooks/useSensors';
 import EmergencyOverlay from '@/components/EmergencyOverlay';
 import IncomingAlert from '@/components/IncomingAlert';
-import { Users, Map, PhoneCall, Footprints, Info, LogOut, MessageSquareWarning, MessageSquare, Inbox } from 'lucide-react';
+import { Info, LogOut, ShieldAlert } from 'lucide-react';
 
 export default function Home() {
-  const { triggerSOS, userName, logout, inbox } = useAppStore();
+  const { triggerSOS, stopSOS, activeAlert, userName, logout } = useAppStore();
   
   // Initialize device sensor listeners (shake, voice)
   useSensors();
@@ -39,38 +39,61 @@ export default function Home() {
 
       {/* Main SOS Trigger Hub */}
       <div className="flex-1 flex flex-col items-center justify-center relative my-10 min-h-[300px]">
-        {/* Pulsing rings */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-64 h-64 bg-red-500/10 rounded-full animate-ping [animation-duration:3s]" />
-          <div className="absolute w-80 h-80 bg-red-500/5 rounded-full animate-ping [animation-duration:4s]" />
-        </div>
+        
+        {activeAlert ? (
+          <div className="z-10 w-full max-w-xs flex flex-col items-center text-center animate-in fade-in zoom-in duration-300">
+             <div className="w-24 h-24 bg-red-500/20 rounded-full flex items-center justify-center mb-6 animate-pulse">
+               <ShieldAlert className="w-12 h-12 text-red-500" />
+             </div>
+             <h2 className="text-2xl font-black text-rose-500 mb-2 uppercase tracking-tighter">
+               {activeAlert.level} Alert Active
+             </h2>
+             <p className="text-sm text-neutral-400 mb-10 max-w-[250px] leading-relaxed">
+               Your trusted network is continuously receiving your live location and threat signals.
+             </p>
+             <button
+               onClick={stopSOS}
+               className="w-full bg-neutral-900 border-2 border-rose-500/50 hover:bg-rose-500/20 text-white font-black py-5 rounded-3xl transition-all active:scale-95 shadow-[0_0_40px_rgba(225,29,72,0.4)] tracking-widest uppercase"
+             >
+               STOP ALL ALERTS
+             </button>
+          </div>
+        ) : (
+          <>
+            {/* Pulsing rings */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-64 h-64 bg-red-500/10 rounded-full animate-ping [animation-duration:3s]" />
+              <div className="absolute w-80 h-80 bg-red-500/5 rounded-full animate-ping [animation-duration:4s]" />
+            </div>
 
-        {/* The 3 Threat Levels */}
-        <div className="flex flex-col items-center gap-4 z-10 w-full max-w-xs">
-          <button
-            onClick={() => triggerSOS('yellow')}
-            className="w-full relative group overflow-hidden rounded-full bg-yellow-500/10 border-2 border-yellow-500/50 hover:bg-yellow-500/20 text-yellow-500 font-bold py-3 transition-all duration-300 transform hover:scale-105 active:scale-95 flex flex-col items-center justify-center"
-          >
-            <span className="text-lg">Vibe Check (Yellow)</span>
-            <span className="text-xs font-normal opacity-70 mt-0.5">Log Uneasy Feeling</span>
-          </button>
+            {/* The 3 Threat Levels */}
+            <div className="flex flex-col items-center gap-4 z-10 w-full max-w-xs">
+              <button
+                onClick={() => triggerSOS('yellow')}
+                className="w-full relative group overflow-hidden rounded-full bg-yellow-500/10 border-2 border-yellow-500/50 hover:bg-yellow-500/20 text-yellow-500 font-bold py-3 transition-all duration-300 transform hover:scale-105 active:scale-95 flex flex-col items-center justify-center"
+              >
+                <span className="text-lg">Vibe Check (Yellow)</span>
+                <span className="text-xs font-normal opacity-70 mt-0.5">Log Uneasy Feeling</span>
+              </button>
 
-          <button
-            onClick={() => triggerSOS('orange')}
-            className="w-full relative group overflow-hidden rounded-full bg-orange-500/10 border-2 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 font-bold py-3 transition-all duration-300 transform hover:scale-105 active:scale-95 flex flex-col items-center justify-center"
-          >
-            <span className="text-lg">Potential Threat (Orange)</span>
-            <span className="text-xs font-normal opacity-70 mt-0.5">Silent GPS Streaming</span>
-          </button>
+              <button
+                onClick={() => triggerSOS('orange')}
+                className="w-full relative group overflow-hidden rounded-full bg-orange-500/10 border-2 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 font-bold py-3 transition-all duration-300 transform hover:scale-105 active:scale-95 flex flex-col items-center justify-center"
+              >
+                <span className="text-lg">Potential Threat (Orange)</span>
+                <span className="text-xs font-normal opacity-70 mt-0.5">Silent GPS Streaming</span>
+              </button>
 
-          <button
-            onClick={() => triggerSOS('red')}
-            className="w-full relative group overflow-hidden rounded-full bg-gradient-to-br from-red-600 to-red-800 shadow-[0_0_40px_rgba(220,38,38,0.5)] text-white font-black py-8 transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_60px_rgba(220,38,38,0.7)] active:scale-95 flex flex-col items-center justify-center border-4 border-neutral-900/50 mt-2"
-          >
-            <span className="text-4xl tracking-widest">SOS</span>
-            <span className="text-xs font-medium opacity-90 mt-1 uppercase">Immediate Danger</span>
-          </button>
-        </div>
+              <button
+                onClick={() => triggerSOS('red')}
+                className="w-full relative group overflow-hidden rounded-full bg-gradient-to-br from-red-600 to-red-800 shadow-[0_0_40px_rgba(220,38,38,0.5)] text-white font-black py-8 transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_60px_rgba(220,38,38,0.7)] active:scale-95 flex flex-col items-center justify-center border-4 border-neutral-900/50 mt-2"
+              >
+                <span className="text-4xl tracking-widest">SOS</span>
+                <span className="text-xs font-medium opacity-90 mt-1 uppercase">Immediate Danger</span>
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Test Hint */}

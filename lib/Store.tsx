@@ -19,6 +19,7 @@ export type AppMessage = {
   text: string;
   timestamp: number;
   type: 'alert' | 'fallback' | 'system';
+  priority?: ThreatLevel;
 };
 
 export type ThreatLevel = 'yellow' | 'orange' | 'red';
@@ -48,7 +49,7 @@ interface AppContextType {
   updateLocation: (lat: number, lng: number) => void;
   logout: () => void;
   inbox: AppMessage[];
-  sendAppMessage: (text: string, type: 'alert' | 'fallback' | 'system') => void;
+  sendAppMessage: (text: string, type: 'alert' | 'fallback' | 'system', priority?: ThreatLevel) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -106,9 +107,9 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         onValue(inboxRefObj, (snapshot) => {
           if (snapshot.exists()) {
             const msgs = snapshot.val();
-            // Convert to array and sort by timestamp descending (newest first)
-            const sorted = Object.values(msgs).sort((a: any, b: any) => b.timestamp - a.timestamp) as AppMessage[];
-            setInbox(sorted);
+            // We just convert to array here. We will apply priority sorting inside the messages page!
+            const msgArray = Object.values(msgs) as AppMessage[];
+            setInbox(msgArray);
           } else {
             setInbox([]);
           }
@@ -172,7 +173,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const sendAppMessage = (text: string, type: 'alert' | 'fallback' | 'system') => {
+  const sendAppMessage = (text: string, type: 'alert' | 'fallback' | 'system', priority?: ThreatLevel) => {
     if (!userIdRef.current || isMockEnvironment) return;
     const msgId = `msg_${Date.now()}`;
     const msg: AppMessage = {
@@ -181,7 +182,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       senderName: userNameRef.current,
       text,
       timestamp: Date.now(),
-      type
+      type,
+      priority
     };
     contactsRef.current.forEach(contact => {
       set(ref(db, `users/${contact.id}/messages/${msgId}`), msg);
@@ -208,11 +210,12 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
           set(ref(db, `users/${contact.id}/incomingAlerts/${alertId}`), alert);
        });
 
-       // Also log it into their inbox
-       sendAppMessage(`${userNameRef.current} triggered a ${level.toUpperCase()} alert!`, 'alert');
+       // Also log it into their inbox with highest priority sorting
+       sendAppMessage(`${userNameRef.current} triggered a ${level.toUpperCase()} alert!`, 'alert', level);
 
        // Auto-trigger SMS fallback directly when Red SOS is hit
        if (level === 'red') {
+         sendAppMessage(`${userNameRef.current} triggered critical SMS FALLBACK!`, 'fallback', 'red');
          const msg = typeof window !== 'undefined' ? localStorage.getItem('customSmsMessage') || "HELP! I am in danger. Track my location here:" : "HELP! I am in danger.";
          const locLink = location ? ` https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}` : '';
          const phones = contactsRef.current.map(c => c.phone).filter(Boolean).join(','); 
