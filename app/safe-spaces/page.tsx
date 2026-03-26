@@ -61,7 +61,7 @@ export default function SafeSpacesPage() {
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
-          <span className="text-xs font-bold text-neutral-300 uppercase tracking-widest">Fire</span>
+          <span className="text-xs font-bold text-neutral-300 uppercase tracking-widest">Fire Station</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.8)]" />

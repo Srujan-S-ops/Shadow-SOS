@@ -26,7 +26,7 @@ const hospitalIcon = createIcon('#ef4444'); // Red
 const fireIcon = createIcon('#f97316'); // Orange
 const pharmacyIcon = createIcon('#14b8a6'); // Teal
 const govIcon = createIcon('#a855f7'); // Purple
-const userIcon = createIcon('#10b981'); // Green
+const userIcon = createIcon('#ffffff'); // White
 
 interface SafeMapViewerProps {
   userLat: number;
