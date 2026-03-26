@@ -49,16 +49,18 @@ export default function CalculatorMode({ onExit }: CalculatorModeProps) {
   ];
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-neutral-900 flex flex-col items-center justify-end pb-10">
-      {/* Calculator Display */}
-      <div className="w-full flex-1 max-w-sm flex flex-col justify-end p-6 text-right">
-        <div className="text-white text-6xl font-light tracking-wider break-all leading-tight max-h-48 overflow-y-auto w-full">
-          {display}
+    <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-xl flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-sm flex flex-col items-center bg-neutral-900/90 border border-neutral-600/50 rounded-[2.5rem] p-6 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative">
+        
+        {/* Calculator Display */}
+        <div className="w-full h-40 flex flex-col justify-end text-right mb-6 bg-black/40 rounded-3xl p-4 border border-neutral-800">
+          <div className="text-white text-5xl font-light tracking-wider break-all leading-tight overflow-hidden">
+            {display}
+          </div>
         </div>
-      </div>
-      
-      {/* Calculator Keypad */}
-      <div className="w-full max-w-sm grid grid-cols-4 gap-4 px-6">
+        
+        {/* Calculator Keypad */}
+        <div className="w-full grid grid-cols-4 gap-3">
         {buttons.map((row, rIdx) => (
           <React.Fragment key={rIdx}>
             {row.map((btn, bIdx) => {
@@ -88,6 +90,7 @@ export default function CalculatorMode({ onExit }: CalculatorModeProps) {
             })}
           </React.Fragment>
         ))}
+        </div>
       </div>
     </div>
   );

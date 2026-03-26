@@ -1,4 +1,4 @@
-export type AppLanguage = 'en' | 'hi' | 'bn' | 'te' | 'mr' | 'ta';
+export type AppLanguage = 'en' | 'hi' | 'bn' | 'te' | 'mr' | 'ta' | 'kn';
 
 export const translations = {
   en: {
@@ -144,6 +144,30 @@ export const translations = {
     autoSosIn: 'தானியங்கி SOS',
     seconds: 'வினாடிகளில்',
     iAmOkay: 'நான் நலமாக இருக்கிறேன்'
+  },
+  kn: {
+    appTitle: 'ರಕ್ಷಾ',
+    staySafe: 'ಸುರಕ್ಷಿತವಾಗಿರಿ',
+    logout: 'ಲಾಗ್ ಔಟ್',
+    cautionAlert: 'ಎಚ್ಚರಿಕೆ ಅಲರ್ಟ್',
+    logUneasyFeeling: 'ಅಸ್ವಸ್ಥತೆಯ ಭಾವನೆ',
+    potentialThreat: 'ಸಂಭಾವ್ಯ ಅಪಾಯ',
+    silentGPS: 'ಮೌನ ಜಿಪಿಎಸ್',
+    sos: 'ಎಸ್ಒಎಸ್ (SOS)',
+    immediateDanger: 'ತಕ್ಷಣದ ಅಪಾಯ',
+    police: 'ಪೊಲೀಸ್',
+    womenHelpline: 'ಮಹಿಳಾ ಸಹಾಯವಾಣಿ',
+    childHelpline: 'ಮಕ್ಕಳ ಸಹಾಯವಾಣಿ',
+    ambulance: 'ಆಂಬ್ಯುಲೆನ್ಸ್',
+    stopAllAlerts: 'ಎಲ್ಲಾ ಅಲರ್ಟ್‌ಗಳನ್ನು ನಿಲ್ಲಿಸಿ',
+    alertActive: 'ಅಲರ್ಟ್ ಸಕ್ರಿಯವಾಗಿದೆ',
+    trustedNetworkReceiving: 'ನಿಮ್ಮ ವಿಶ್ವಾಸಾರ್ಹ ನೆಟ್‌ವರ್ಕ್ ನಿಮ್ಮ ಲೈವ್ ಸ್ಥಳ ಮತ್ತು ಅಪಾಯದ ಸಂಕೇತಗಳನ್ನು ಸ್ವೀಕರಿಸುತ್ತಿದೆ.',
+    demoInfo: 'ಡೆಮೊ ಮಾಹಿತಿ',
+    demoText: 'ಬೇರೆಯವರಿಂದ ಬರುವ ಅಲರ್ಟ್ ಅನ್ನು ಅನುಕರಿಸಲು ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ I ಒತ್ತಿರಿ!',
+    areYouOkay: 'ನೀವು ಚೆನ್ನಾಗಿದ್ದೀರಾ?',
+    autoSosIn: 'ಸ್ವಯಂ SOS',
+    seconds: 'ಸೆಕೆಂಡುಗಳಲ್ಲಿ',
+    iAmOkay: 'ನಾನು ಚೆನ್ನಾಗಿದ್ದೇನೆ'
   }
 };
 
@@ -153,5 +177,6 @@ export const languages = [
   { code: 'bn', name: 'বাংলা' },
   { code: 'te', name: 'తెలుగు' },
   { code: 'mr', name: 'मराठी' },
-  { code: 'ta', name: 'தமிழ்' }
+  { code: 'ta', name: 'தமிழ்' },
+  { code: 'kn', name: 'ಕನ್ನಡ' }
 ];

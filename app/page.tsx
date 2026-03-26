@@ -9,6 +9,7 @@ import { Info, LogOut, ShieldAlert, Calculator } from 'lucide-react';
 import CalculatorMode from '@/components/CalculatorMode';
 import ShakeAlertOverlay from '@/components/ShakeAlertOverlay';
 import RakshaLogo from '@/components/RakshaLogo';
+import UserProfileButton from '@/components/UserProfileButton';
 import { translations, languages, AppLanguage } from '@/lib/i18n';
 
 export default function Home() {
@@ -63,6 +64,7 @@ export default function Home() {
               <option key={l.code} value={l.code}>{l.name}</option>
             ))}
           </select>
+          <UserProfileButton />
           <button 
             onClick={logout}
             className="p-3 bg-neutral-900 border border-neutral-800 rounded-full hover:bg-neutral-800 transition text-red-500"
@@ -131,8 +133,8 @@ export default function Home() {
 
             {/* Emergency Contacts */}
             <div className="w-full max-w-xs mt-6 grid grid-cols-2 gap-3 z-10 pb-6">
-              <a href="tel:112" className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
-                <span className="text-blue-500 font-black text-xl mb-0.5">112</span>
+              <a href="tel:100" className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
+                <span className="text-blue-500 font-black text-xl mb-0.5">100</span>
                 <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">{t.police}</span>
               </a>
               <a href="tel:1091" className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
@@ -143,9 +145,9 @@ export default function Home() {
                 <span className="text-indigo-400 font-black text-xl mb-0.5">1098</span>
                 <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">{t.childHelpline}</span>
               </a>
-              <a href="tel:108" className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
-                <span className="text-emerald-500 font-black text-xl mb-0.5">108</span>
-                <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">{t.ambulance}</span>
+              <a href="sms:?body=SOS!%20I%20am%20in%20danger%20and%20need%20immediate%20help." className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
+                <span className="text-emerald-500 font-black text-xl mb-0.5">SMS</span>
+                <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">Fallback</span>
               </a>
             </div>
           </>
