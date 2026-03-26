@@ -133,11 +133,14 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     const incomingAlertsRef = ref(db, `users/${userId}/incomingAlerts`);
     const unsubscribe = onValue(incomingAlertsRef, (snapshot) => {
       if (snapshot.exists()) {
-        const alerts = snapshot.val();
-        // Find the first active one
-        const active = Object.values(alerts).find((a: any) => a.status === 'active') as AlertEvent | undefined;
-        if (active) {
-          setIncomingAlert(active);
+        const ObjectAlerts = snapshot.val();
+        // Find ALL active alerts and SORT them by newest first! 
+        // This solves the bug where a stale "Yellow" alert prevents an incoming "Red" or "Orange" alert from showing.
+        const activeAlerts = Object.values(ObjectAlerts).filter((a: any) => a.status === 'active') as AlertEvent[];
+        
+        if (activeAlerts.length > 0) {
+          const newestActiveAlert = activeAlerts.sort((a, b) => b.timestamp - a.timestamp)[0];
+          setIncomingAlert(newestActiveAlert);
         } else {
           setIncomingAlert(null); // All stopped
         }
