@@ -3,13 +3,16 @@ import React, { createContext, useContext, useEffect, useState, useRef } from 'r
 import { useRouter, usePathname } from 'next/navigation';
 import { auth, db, isMockEnvironment } from '@/lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { ref, onValue, set } from 'firebase/database';
+import { ref, onValue, set, update } from 'firebase/database';
+import { useAudioVault } from '@/hooks/useAudioVault';
 
 export type Contact = {
   id: string;
   name: string;
   phone?: string;
 };
+
+export type ThreatLevel = 'yellow' | 'orange' | 'red';
 
 export type AlertEvent = {
   alertId: string;
@@ -18,6 +21,8 @@ export type AlertEvent = {
   location: { lat: number; lng: number } | null;
   timestamp: number;
   status: 'active' | 'stopped';
+  level: ThreatLevel;
+  evidenceUrl?: string;
 };
 
 interface AppContextType {
@@ -27,7 +32,7 @@ interface AppContextType {
   addContact: (contact: Contact) => void;
   removeContact: (id: string) => void;
   activeAlert: AlertEvent | null;
-  triggerSOS: () => void;
+  triggerSOS: (level?: ThreatLevel) => void;
   stopSOS: () => void;
   incomingAlert: AlertEvent | null;
   stopIncomingAlarm: () => void;
@@ -44,6 +49,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const [activeAlert, setActiveAlert] = useState<AlertEvent | null>(null);
   const [incomingAlert, setIncomingAlert] = useState<AlertEvent | null>(null);
   const [location, setLocation] = useState<{lat: number, lng: number} | null>(null);
+  const { captureEvidence } = useAudioVault();
   
   const router = useRouter();
   const pathname = usePathname();
@@ -138,7 +144,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const triggerSOS = () => {
+  const triggerSOS = (level: ThreatLevel = 'red') => {
     if (!userIdRef.current) return;
     const alertId = `alert_${userIdRef.current}_${Date.now()}`;
     const alert: AlertEvent = {
@@ -147,7 +153,8 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
       senderName: userNameRef.current,
       location,
       timestamp: Date.now(),
-      status: 'active'
+      status: 'active',
+      level
     };
     setActiveAlert(alert);
     
@@ -156,6 +163,20 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
        contactsRef.current.forEach(contact => {
           set(ref(db, `users/${contact.id}/incomingAlerts/${alertId}`), alert);
        });
+
+       // Secretly record audio if Red Alert
+       if (level === 'red') {
+         captureEvidence(alertId).then((url) => {
+           if (url) {
+             // Append evidence URL to the active database streams
+             contactsRef.current.forEach(contact => {
+               update(ref(db, `users/${contact.id}/incomingAlerts/${alertId}`), { evidenceUrl: url });
+             });
+             setActiveAlert(prev => prev ? { ...prev, evidenceUrl: url } : null);
+           }
+         });
+       }
+
     } else {
       console.log("SOS TRIGGERED! Broadcasting to contacts:", contactsRef.current);
     }

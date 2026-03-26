@@ -5,7 +5,7 @@ import { useAppStore } from '@/lib/Store';
 import { useSensors } from '@/hooks/useSensors';
 import EmergencyOverlay from '@/components/EmergencyOverlay';
 import IncomingAlert from '@/components/IncomingAlert';
-import { Users, Map, PhoneCall, Footprints, Info, LogOut, MessageSquareWarning } from 'lucide-react';
+import { Users, Map, PhoneCall, Footprints, Info, LogOut, MessageSquareWarning, MessageSquare } from 'lucide-react';
 
 export default function Home() {
   const { triggerSOS, userName, logout } = useAppStore();
@@ -45,19 +45,36 @@ export default function Home() {
           <div className="absolute w-80 h-80 bg-red-500/5 rounded-full animate-ping [animation-duration:4s]" />
         </div>
 
-        <button
-          onClick={triggerSOS}
-          className="relative z-10 w-52 h-52 bg-gradient-to-br from-red-600 to-red-800 rounded-full shadow-[0_0_40px_rgba(220,38,38,0.5)] flex items-center justify-center font-black text-5xl text-white tracking-widest active:scale-95 transform transition-all hover:scale-105 hover:shadow-[0_0_60px_rgba(220,38,38,0.7)] border-4 border-neutral-900/50"
-        >
-          SOS
-        </button>
-        <p className="mt-8 text-neutral-500 text-sm max-w-[200px] text-center font-medium">
-          Tap instantly or shake your phone hard if in danger
-        </p>
+        {/* The 3 Threat Levels */}
+        <div className="flex flex-col items-center gap-4 z-10 w-full max-w-xs">
+          <button
+            onClick={() => triggerSOS('yellow')}
+            className="w-full relative group overflow-hidden rounded-full bg-yellow-500/10 border-2 border-yellow-500/50 hover:bg-yellow-500/20 text-yellow-500 font-bold py-3 transition-all duration-300 transform hover:scale-105 active:scale-95 flex flex-col items-center justify-center"
+          >
+            <span className="text-lg">Vibe Check (Yellow)</span>
+            <span className="text-xs font-normal opacity-70 mt-0.5">Log Uneasy Feeling</span>
+          </button>
+
+          <button
+            onClick={() => triggerSOS('orange')}
+            className="w-full relative group overflow-hidden rounded-full bg-orange-500/10 border-2 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 font-bold py-3 transition-all duration-300 transform hover:scale-105 active:scale-95 flex flex-col items-center justify-center"
+          >
+            <span className="text-lg">Potential Threat (Orange)</span>
+            <span className="text-xs font-normal opacity-70 mt-0.5">Silent GPS Streaming</span>
+          </button>
+
+          <button
+            onClick={() => triggerSOS('red')}
+            className="w-full relative group overflow-hidden rounded-full bg-gradient-to-br from-red-600 to-red-800 shadow-[0_0_40px_rgba(220,38,38,0.5)] text-white font-black py-8 transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_60px_rgba(220,38,38,0.7)] active:scale-95 flex flex-col items-center justify-center border-4 border-neutral-900/50 mt-2"
+          >
+            <span className="text-4xl tracking-widest">SOS</span>
+            <span className="text-xs font-medium opacity-90 mt-1 uppercase">Immediate Danger</span>
+          </button>
+        </div>
       </div>
 
       {/* Action Grid */}
-      <div className="grid grid-cols-2 gap-4 mt-auto">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-auto">
         <Link href="/walk" className="bg-neutral-900/80 backdrop-blur border border-neutral-800 p-4 rounded-2xl flex flex-col items-center text-center hover:bg-neutral-800 transition py-5">
           <div className="bg-emerald-500/10 p-3 rounded-full mb-3">
             <Footprints className="text-emerald-500 w-6 h-6" />
@@ -81,6 +98,12 @@ export default function Home() {
             <PhoneCall className="text-cyan-500 w-6 h-6" />
           </div>
           <span className="font-semibold text-white text-sm">Fake Call</span>
+        </Link>
+        <Link href="/smart-excuse" className="bg-neutral-900/80 backdrop-blur border border-neutral-800 p-4 rounded-2xl flex flex-col items-center text-center hover:bg-neutral-800 transition py-5 md:col-span-1 col-span-2">
+          <div className="bg-indigo-500/10 p-3 rounded-full mb-3">
+            <MessageSquare className="text-indigo-400 w-6 h-6" />
+          </div>
+          <span className="font-semibold text-white text-sm">AI Excuse Generator</span>
         </Link>
       </div>
 

@@ -25,12 +25,46 @@ export default function EmergencyOverlay() {
 
   if (!activeAlert) return null;
 
+  if (activeAlert.level === 'yellow') {
+    return (
+      <div className="fixed top-20 left-4 right-4 z-50 bg-yellow-500/90 text-black p-4 rounded-xl shadow-xl flex justify-between items-center animate-bounce">
+        <div className="flex items-center gap-3">
+          <ShieldAlert className="w-6 h-6" />
+          <div>
+            <h3 className="font-bold text-sm">Yellow Alert Logged</h3>
+            <p className="text-xs opacity-80">Your uneasy status is logged securely.</p>
+          </div>
+        </div>
+        <button onClick={stopSOS} className="bg-black/20 p-2 rounded-full hover:bg-black/30">
+          <XOctagon className="w-5 h-5" />
+        </button>
+      </div>
+    );
+  }
+
+  if (activeAlert.level === 'orange') {
+    return (
+      <div className="fixed top-20 left-4 right-4 z-50 bg-orange-600/90 text-white p-4 rounded-xl shadow-xl flex justify-between items-center">
+        <div className="flex items-center gap-3">
+          <MapPin className="w-6 h-6 animate-pulse" />
+          <div>
+            <h3 className="font-bold text-sm">Orange Alert Active</h3>
+            <p className="text-xs opacity-90">Live streaming GPS to contacts silently.</p>
+          </div>
+        </div>
+        <button onClick={stopSOS} className="bg-black/20 p-2 rounded-full hover:bg-black/30">
+          <XOctagon className="w-5 h-5" />
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-rose-600/20 backdrop-blur-md animate-siren">
       <div className="bg-slate-900 border-2 border-rose-500 rounded-3xl p-6 md:p-10 text-center shadow-[0_0_50px_rgba(225,29,72,0.5)] max-w-sm w-full mx-4 flex flex-col items-center">
         
-        <div className="animate-pulse mb-6 rounded-full bg-rose-500/20 p-4">
-          <ShieldAlert className="w-20 h-20 text-rose-500" />
+        <div className="animate-pulse mb-4 rounded-full bg-rose-500/20 p-4">
+          <ShieldAlert className="w-16 h-16 text-rose-500" />
         </div>
 
         <h1 className="text-3xl font-black text-rose-500 mb-2 tracking-tighter">

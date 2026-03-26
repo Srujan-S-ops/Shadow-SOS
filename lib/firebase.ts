@@ -2,6 +2,7 @@ import { initializeApp, getApps } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyC1gg7v1GxmPPc5ZECTF-Kp7oKlwQ26uUg",
@@ -17,6 +18,7 @@ export const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getA
 export const db = getDatabase(app);
 export const firestore = getFirestore(app);
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 
 // Force mock environment to false to rely on the hardcoded keys
 export const isMockEnvironment = false;
