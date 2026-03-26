@@ -92,6 +92,26 @@ export default function Home() {
                 <span className="text-xs font-medium opacity-90 mt-1 uppercase">Immediate Danger</span>
               </button>
             </div>
+
+            {/* Emergency Contacts */}
+            <div className="w-full max-w-xs mt-6 grid grid-cols-2 gap-3 z-10 pb-6">
+              <a href="tel:112" className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
+                <span className="text-blue-500 font-black text-xl mb-0.5">112</span>
+                <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">Police</span>
+              </a>
+              <a href="tel:1091" className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
+                <span className="text-rose-500 font-black text-xl mb-0.5">1091</span>
+                <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">Women Help</span>
+              </a>
+              <a href="tel:1098" className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
+                <span className="text-indigo-400 font-black text-xl mb-0.5">1098</span>
+                <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">Child Help</span>
+              </a>
+              <a href="tel:108" className="bg-neutral-900 border border-neutral-800 p-3 rounded-2xl flex flex-col items-center justify-center hover:bg-neutral-800 transition shadow-lg active:scale-95">
+                <span className="text-emerald-500 font-black text-xl mb-0.5">108</span>
+                <span className="text-neutral-400 text-[10px] uppercase font-bold tracking-widest text-center">Ambulance</span>
+              </a>
+            </div>
           </>
         )}
       </div>

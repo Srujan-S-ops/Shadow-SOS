@@ -21,9 +21,12 @@ const createIcon = (color: string) => {
   });
 };
 
-const policeIcon = createIcon('#3b82f6'); // Blue for police
-const hospitalIcon = createIcon('#ef4444'); // Red for hospital
-const userIcon = createIcon('#10b981'); // Green for user
+const policeIcon = createIcon('#3b82f6'); // Blue
+const hospitalIcon = createIcon('#ef4444'); // Red
+const fireIcon = createIcon('#f97316'); // Orange
+const pharmacyIcon = createIcon('#14b8a6'); // Teal
+const govIcon = createIcon('#a855f7'); // Purple
+const userIcon = createIcon('#10b981'); // Green
 
 interface SafeMapViewerProps {
   userLat: number;
@@ -36,14 +39,12 @@ export default function SafeMapViewer({ userLat, userLng }: SafeMapViewerProps) 
 
   useEffect(() => {
     const fetchSafeSpaces = async () => {
-      // 2km radius
+      // 2km radius with regex matching for all secure amenities
       const query = `
         [out:json][timeout:25];
         (
-          node["amenity"="police"](around:2000, ${userLat}, ${userLng});
-          node["amenity"="hospital"](around:2000, ${userLat}, ${userLng});
-          way["amenity"="police"](around:2000, ${userLat}, ${userLng});
-          way["amenity"="hospital"](around:2000, ${userLat}, ${userLng});
+          node["amenity"~"^(police|hospital|fire_station|pharmacy|townhall)$"](around:2000, ${userLat}, ${userLng});
+          way["amenity"~"^(police|hospital|fire_station|pharmacy|townhall)$"](around:2000, ${userLat}, ${userLng});
         );
         out center;
       `;
@@ -58,9 +59,20 @@ export default function SafeMapViewer({ userLat, userLng }: SafeMapViewerProps) 
         const mapped = data.elements.map((el: any) => {
           const lat = el.lat || el.center?.lat;
           const lon = el.lon || el.center?.lon;
-          const name = el.tags?.name || (el.tags?.amenity === 'police' ? 'Police Station' : 'Hospital');
           const type = el.tags?.amenity;
-          return { id: el.id, lat, lon, name, type };
+          
+          let friendlyName = 'Safe Space';
+          let icon = policeIcon;
+          
+          if (type === 'police') { friendlyName = 'Police Station'; icon = policeIcon; }
+          else if (type === 'hospital') { friendlyName = 'Hospital'; icon = hospitalIcon; }
+          else if (type === 'fire_station') { friendlyName = 'Fire Station'; icon = fireIcon; }
+          else if (type === 'pharmacy') { friendlyName = 'Pharmacy'; icon = pharmacyIcon; }
+          else if (type === 'townhall') { friendlyName = 'Govt Office'; icon = govIcon; }
+          
+          const name = el.tags?.name || friendlyName;
+          
+          return { id: el.id, lat, lon, name, type, friendlyName, icon };
         }).filter((p: any) => p.lat && p.lon);
 
         setPlaces(mapped);
@@ -80,7 +92,7 @@ export default function SafeMapViewer({ userLat, userLng }: SafeMapViewerProps) 
         <div className="absolute inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-center justify-center text-white">
           <div className="animate-pulse flex flex-col items-center">
             <Shield className="w-12 h-12 mb-4 text-indigo-400" />
-            <p className="font-bold tracking-widest uppercase">Radar Scanning 2km Radius...</p>
+            <p className="font-bold tracking-widest uppercase text-center px-4">Radar Scanning 2km Radius...</p>
           </div>
         </div>
       )}
@@ -98,7 +110,7 @@ export default function SafeMapViewer({ userLat, userLng }: SafeMapViewerProps) 
 
         {/* User Marker */}
         <Marker position={[userLat, userLng]} icon={userIcon}>
-          <Popup className="text-black font-bold">You are here</Popup>
+          <Popup className="text-black font-bold text-center">You are here</Popup>
         </Marker>
 
         {/* 2km Radius Circle */}
@@ -113,12 +125,12 @@ export default function SafeMapViewer({ userLat, userLng }: SafeMapViewerProps) 
           <Marker 
             key={place.id} 
             position={[place.lat, place.lon]} 
-            icon={place.type === 'police' ? policeIcon : hospitalIcon}
+            icon={place.icon}
           >
             <Popup className="text-black">
               <div className="font-bold text-sm mb-1">{place.name}</div>
-              <div className="text-xs uppercase text-slate-500 font-bold tracking-wider">
-                {place.type === 'police' ? 'Police Station' : 'Medical Facility'}
+              <div className="text-[10px] uppercase text-slate-500 font-bold tracking-widest">
+                {place.friendlyName}
               </div>
             </Popup>
           </Marker>
