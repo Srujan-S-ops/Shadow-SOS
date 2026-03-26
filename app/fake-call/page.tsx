@@ -1,15 +1,17 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
-import { Phone, PhoneOff, MicOff, Grid, Volume2, Plus, Video, User } from 'lucide-react';
+import { Phone, PhoneOff, MicOff, Grid, Volume2, Plus, Video, User, ShieldAlert } from 'lucide-react';
+import Link from 'next/link';
 
 export default function FakeCallPage() {
   const [caller, setCaller] = useState('Mom');
-  const [status, setStatus] = useState<'incoming' | 'active' | 'ended'>('incoming');
+  const [status, setStatus] = useState<'idle' | 'incoming' | 'active' | 'ended'>('idle');
   const [time, setTime] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (status === 'incoming' && audioRef.current) {
+      audioRef.current.currentTime = 0;
       audioRef.current.play().catch(e => console.log('Autoplay prevented:', e));
     } else if (audioRef.current) {
       audioRef.current.pause();
@@ -25,6 +27,10 @@ export default function FakeCallPage() {
     }
     return () => clearInterval(interval);
   }, [status]);
+
+  const triggerCall = () => {
+    setStatus('incoming');
+  };
 
   const handleAccept = () => setStatus('active');
   const handleDecline = () => {
@@ -44,6 +50,27 @@ export default function FakeCallPage() {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <p className="text-slate-500 font-bold text-xl">Call Ended</p>
+      </div>
+    );
+  }
+
+  if (status === 'idle') {
+    return (
+      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-6 text-center">
+        <Link href="/" className="absolute top-8 left-6 text-slate-400 font-bold">Close</Link>
+        <div className="w-24 h-24 bg-cyan-500/10 rounded-full flex items-center justify-center mb-8 border border-cyan-500/30">
+          <Phone className="w-10 h-10 text-cyan-400" />
+        </div>
+        <h1 className="text-3xl text-white font-bold mb-4 tracking-tight">Fake Call Escape</h1>
+        <p className="text-slate-400 mb-12 max-w-xs leading-relaxed">
+          Tap the button below. Your screen will instantly simulate an incoming iPhone call and blare the iPhone ringtone to help you excuse yourself.
+        </p>
+        <button 
+          onClick={triggerCall}
+          className="bg-cyan-500 hover:bg-cyan-400 text-black font-black py-5 px-12 rounded-full text-lg shadow-[0_0_30px_rgba(6,182,212,0.4)] active:scale-95 transition-all w-full max-w-xs"
+        >
+          TRIGGER FAKE CALL
+        </button>
       </div>
     );
   }
