@@ -73,49 +73,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Action Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-auto">
-        <Link href="/walk" className="bg-neutral-900/80 backdrop-blur border border-neutral-800 p-4 rounded-2xl flex flex-col items-center text-center hover:bg-neutral-800 transition py-5">
-          <div className="bg-emerald-500/10 p-3 rounded-full mb-3">
-            <Footprints className="text-emerald-500 w-6 h-6" />
-          </div>
-          <span className="font-semibold text-white text-sm">Walk With Me</span>
-        </Link>
-        <Link href="/contacts" className="bg-neutral-900/80 backdrop-blur border border-neutral-800 p-4 rounded-2xl flex flex-col items-center text-center hover:bg-neutral-800 transition py-5">
-          <div className="bg-blue-500/10 p-3 rounded-full mb-3">
-            <Users className="text-blue-500 w-6 h-6" />
-          </div>
-          <span className="font-semibold text-white text-sm">Trusted Network</span>
-        </Link>
-        <Link href="/sms" className="bg-neutral-900/80 backdrop-blur border border-neutral-800 p-4 rounded-2xl flex flex-col items-center text-center hover:bg-neutral-800 transition py-5">
-          <div className="bg-orange-500/10 p-3 rounded-full mb-3">
-            <MessageSquareWarning className="text-orange-500 w-6 h-6" />
-          </div>
-          <span className="font-semibold text-white text-sm">SMS Fallback</span>
-        </Link>
-        <Link href="/fake-call" className="bg-neutral-900/80 backdrop-blur border border-neutral-800 p-4 rounded-2xl flex flex-col items-center text-center hover:bg-neutral-800 transition py-5">
-          <div className="bg-cyan-500/10 p-3 rounded-full mb-3">
-            <PhoneCall className="text-cyan-500 w-6 h-6" />
-          </div>
-          <span className="font-semibold text-white text-sm">Fake Call</span>
-        </Link>
-        <Link href="/smart-excuse" className="bg-neutral-900/80 backdrop-blur border border-neutral-800 p-4 rounded-2xl flex flex-col items-center text-center hover:bg-neutral-800 transition py-5">
-          <div className="bg-indigo-500/10 p-3 rounded-full mb-3">
-            <MessageSquare className="text-indigo-400 w-6 h-6" />
-          </div>
-          <span className="font-semibold text-white text-sm">AI Excuse Generator</span>
-        </Link>
-        <Link href="/messages" className="bg-neutral-900/80 backdrop-blur border border-neutral-800 p-4 rounded-2xl flex flex-col items-center text-center hover:bg-neutral-800 transition py-5 md:col-span-1 col-span-2">
-          <div className="bg-rose-500/10 p-3 rounded-full mb-3 relative">
-            <Inbox className="text-rose-400 w-6 h-6" />
-            {inbox && inbox.length > 0 && (
-               <span className="absolute top-2 right-2 w-3 h-3 bg-rose-500 rounded-full border border-neutral-900 animate-pulse" />
-            )}
-          </div>
-          <span className="font-semibold text-white text-sm">Emergency Inbox</span>
-        </Link>
-      </div>
-
       {/* Test Hint */}
       <div className="absolute top-4 right-16 group z-50">
         <Info className="w-5 h-5 text-neutral-700 hover:text-neutral-400 cursor-pointer" />
