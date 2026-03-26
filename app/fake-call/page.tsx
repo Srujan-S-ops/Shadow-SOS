@@ -1,11 +1,24 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { Phone, PhoneOff } from 'lucide-react';
+import { useRingtone } from '@/hooks/useRingtone';
 
 export default function FakeCallPage() {
   const [caller, setCaller] = useState('Mom');
   const [status, setStatus] = useState<'incoming' | 'active' | 'ended'>('incoming');
   const [time, setTime] = useState(0);
+  const { playRingtone, stopRingtone } = useRingtone();
+
+  useEffect(() => {
+    if (status === 'incoming') {
+      // Browser AudioContext policy requires a slight delay or user interaction. 
+      // Since the user clicked a link to get here, it usually auto-plays.
+      playRingtone();
+    } else {
+      stopRingtone();
+    }
+    return () => stopRingtone();
+  }, [status, playRingtone, stopRingtone]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
