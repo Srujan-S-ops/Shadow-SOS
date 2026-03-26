@@ -11,12 +11,10 @@ export default function FakeCallPage() {
   const { playRingtone, stopRingtone } = useRingtone();
 
   useEffect(() => {
-    if (status === 'incoming') {
-      playRingtone();
-    } else {
+    if (status === 'ended' || status === 'idle' || status === 'active') {
       stopRingtone();
     }
-  }, [status, playRingtone, stopRingtone]);
+  }, [status, stopRingtone]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -30,6 +28,7 @@ export default function FakeCallPage() {
 
   const triggerCall = () => {
     setStatus('incoming');
+    playRingtone(); // Called synchronously during the user gesture!
   };
 
   const handleAccept = () => setStatus('active');

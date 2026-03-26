@@ -55,6 +55,11 @@ export function useRingtone() {
       audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
     
+    // Some browsers start AudioContext in a 'suspended' state
+    if (audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume();
+    }
+    
     // Play immediately, then loop every 4 seconds (2s ring + 2s silence)
     playRingBurst();
     intervalRef.current = setInterval(() => {
