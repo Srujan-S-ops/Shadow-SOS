@@ -9,22 +9,40 @@ export function useAudioVault() {
 
   const captureEvidence = useCallback(async (alertId: string, durationMs: number = 5000): Promise<string | null> => {
     try {
-      // aggressively request dual-modality: Audio + Front-facing Video
       let stream;
+      const videoOptions = {
+        width: { ideal: 320 },
+        height: { ideal: 240 },
+        frameRate: { ideal: 15 }
+      };
+      
       try {
         stream = await navigator.mediaDevices.getUserMedia({ 
           audio: true, 
-          video: { facingMode: "user" } 
+          video: { facingMode: "user", ...videoOptions } 
         });
       } catch (err) {
         console.warn("Front camera constraint failed (likely testing on Desktop). Falling back to default camera:", err);
         stream = await navigator.mediaDevices.getUserMedia({ 
           audio: true, 
-          video: true 
+          video: videoOptions 
         });
       }
       
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+      let options: MediaRecorderOptions | undefined = undefined;
+      try {
+        if (typeof MediaRecorder.isTypeSupported === 'function') {
+          if (MediaRecorder.isTypeSupported('video/webm')) {
+            options = { mimeType: 'video/webm' };
+          } else if (MediaRecorder.isTypeSupported('video/mp4')) {
+            options = { mimeType: 'video/mp4' };
+          }
+        }
+      } catch (e) {
+        console.warn('Error checking mimeType support', e);
+      }
+      
+      const mediaRecorder = new MediaRecorder(stream, options);
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
@@ -34,7 +52,7 @@ export function useAudioVault() {
         };
 
         mediaRecorder.onstop = async () => {
-          const videoBlob = new Blob(chunksRef.current, { type: 'video/webm' });
+          const videoBlob = new Blob(chunksRef.current, { type: mediaRecorder.mimeType || 'video/webm' });
           setIsRecording(false);
           // Stop all camera and mic tracks intimately
           stream.getTracks().forEach((track) => track.stop());
