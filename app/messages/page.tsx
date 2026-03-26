@@ -44,26 +44,26 @@ export default function MessagesPage() {
         </div>
       ) : (
         <div className="flex flex-col gap-4">
-          {[...inbox].sort((a, b) => b.timestamp - a.timestamp).map(msg => (
-            <div key={msg.id} className={`bg-neutral-900 border ${msg.priority === 'red' ? 'border-rose-500/50' : msg.priority === 'orange' ? 'border-orange-500/50' : msg.priority === 'yellow' ? 'border-yellow-500/50' : 'border-neutral-800'} p-5 rounded-2xl flex gap-4 animate-in fade-in slide-in-from-bottom-2`}>
+          {[...inbox].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).map((msg, idx) => (
+            <div key={msg.id || `fallback_${idx}`} className={`bg-neutral-900 border ${msg.priority === 'red' ? 'border-rose-500/50' : msg.priority === 'orange' ? 'border-orange-500/50' : msg.priority === 'yellow' ? 'border-yellow-500/50' : 'border-neutral-800'} p-5 rounded-2xl flex gap-4 animate-in fade-in slide-in-from-bottom-2`}>
               <div className="pt-1">
                 {getIcon(msg.type)}
               </div>
-              <div className="flex-1">
+              <div className="flex-1 overflow-hidden">
                 <div className="flex justify-between items-start mb-1">
-                  <span className="font-bold text-lg text-white">{msg.senderName}</span>
-                  <span className="text-xs text-neutral-500">{formatTime(msg.timestamp)}</span>
+                  <span className="font-bold text-lg text-white">{msg.senderName || 'Anonymous'}</span>
+                  <span className="text-xs text-neutral-500">{msg.timestamp ? formatTime(msg.timestamp) : 'Now'}</span>
                 </div>
-                {msg.text.startsWith('Video Evidence Captured:') ? (
+                {msg.text && msg.text.startsWith('Video Evidence Captured:') ? (
                   <div className="mt-2 w-full rounded-xl overflow-hidden border border-rose-500/30">
                     <video src={msg.text.split('Video Evidence Captured: ')[1]} controls className="w-full max-h-[150px] object-cover bg-black" />
                   </div>
                 ) : (
-                  <p className="text-neutral-300 leading-relaxed text-sm">
-                    {msg.text}
+                  <p className="text-neutral-300 leading-relaxed text-sm break-words">
+                    {msg.text || 'Silent Action'}
                   </p>
                 )}
-                {msg.type === 'fallback' && !msg.text.startsWith('Video Evidence') && (
+                {msg.type === 'fallback' && msg.text && !msg.text.startsWith('Video Evidence') && (
                   <div className="mt-3 inline-block bg-orange-500/10 text-orange-400 border border-orange-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
                     SMS Fallback Broadcast
                   </div>
