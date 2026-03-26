@@ -8,7 +8,6 @@ export function useRingtone() {
   const gainNodeRef = useRef<GainNode | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Play a single ring burst
   const playRingBurst = useCallback(() => {
     if (!audioCtxRef.current) return;
     const ctx = audioCtxRef.current;
@@ -20,23 +19,29 @@ export function useRingtone() {
 
     osc1.type = 'sine';
     osc2.type = 'sine';
-    osc1.frequency.setValueAtTime(440, ctx.currentTime); // 440 Hz
-    osc2.frequency.setValueAtTime(480, ctx.currentTime); // 480 Hz
+    osc1.frequency.setValueAtTime(440, ctx.currentTime); 
+    osc2.frequency.setValueAtTime(480, ctx.currentTime); 
 
     osc1.connect(gain);
     osc2.connect(gain);
     gain.connect(ctx.destination);
 
-    // Fade in/out to avoid clicking
+    // Fade in/out ring 1
     gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.1);
-    gain.gain.setValueAtTime(0.5, ctx.currentTime + 1.8);
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 2.0);
+    gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.05);
+    gain.gain.setValueAtTime(0.5, ctx.currentTime + 0.4);
+    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.45);
+
+    // Fade in/out ring 2
+    gain.gain.setValueAtTime(0, ctx.currentTime + 0.55);
+    gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.6);
+    gain.gain.setValueAtTime(0.5, ctx.currentTime + 0.95);
+    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 1.0);
 
     osc1.start(ctx.currentTime);
     osc2.start(ctx.currentTime);
-    osc1.stop(ctx.currentTime + 2.0);
-    osc2.stop(ctx.currentTime + 2.0);
+    osc1.stop(ctx.currentTime + 1.2);
+    osc2.stop(ctx.currentTime + 1.2);
 
     activeOscillatorsRef.current.push(osc1, osc2);
     gainNodeRef.current = gain;

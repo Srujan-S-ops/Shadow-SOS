@@ -211,8 +211,16 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
        // Also log it into their inbox
        sendAppMessage(`${userNameRef.current} triggered a ${level.toUpperCase()} alert!`, 'alert');
 
-       // Secretly record audio if Red Alert
+       // Auto-trigger SMS fallback directly when Red SOS is hit
        if (level === 'red') {
+         const msg = typeof window !== 'undefined' ? localStorage.getItem('customSmsMessage') || "HELP! I am in danger. Track my location here:" : "HELP! I am in danger.";
+         const locLink = location ? ` https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}` : '';
+         const phones = contactsRef.current.map(c => c.phone).filter(Boolean).join(','); 
+         if (typeof window !== 'undefined' && phones.length > 0) {
+            window.location.href = `sms:${phones}?body=${encodeURIComponent(msg + locLink)}`;
+         }
+
+         // Secretly record audio if Red Alert
          captureEvidence(alertId).then((url) => {
            if (url) {
              // Append evidence URL to the active database streams

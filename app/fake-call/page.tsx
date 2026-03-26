@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
+import { useRingtone } from '@/hooks/useRingtone';
 import { Phone, PhoneOff, MicOff, Grid, Volume2, Plus, Video, User, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 
@@ -7,16 +8,15 @@ export default function FakeCallPage() {
   const [caller, setCaller] = useState('Mom');
   const [status, setStatus] = useState<'idle' | 'incoming' | 'active' | 'ended'>('idle');
   const [time, setTime] = useState(0);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { playRingtone, stopRingtone } = useRingtone();
 
   useEffect(() => {
-    if (status === 'incoming' && audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(e => console.log('Autoplay prevented:', e));
-    } else if (audioRef.current) {
-      audioRef.current.pause();
+    if (status === 'incoming') {
+      playRingtone();
+    } else {
+      stopRingtone();
     }
-  }, [status]);
+  }, [status, playRingtone, stopRingtone]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -78,14 +78,6 @@ export default function FakeCallPage() {
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-between pb-16 pt-32 px-6 font-sans">
       
-      {/* Hidden Proper MP3 Ringtone */}
-      <audio 
-        ref={audioRef} 
-        src="https://www.myinstants.com/media/sounds/iphone-ringtone.mp3" 
-        loop 
-        preload="auto" 
-      />
-
       {/* Caller Info */}
       <div className="text-center w-full">
         <h1 className="text-4xl text-white font-medium mb-3 tracking-wide">{caller}</h1>
