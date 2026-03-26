@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { Shield, Plus } from 'lucide-react';
 
@@ -76,7 +75,7 @@ export default function SafeMapViewer({ userLat, userLng }: SafeMapViewerProps) 
   }, [userLat, userLng]);
 
   return (
-    <div className="w-full h-full relative z-0">
+    <div className="absolute inset-0 z-0 bg-[#0f172a]">
       {loading && (
         <div className="absolute inset-0 z-[1000] bg-black/50 backdrop-blur-sm flex items-center justify-center text-white">
           <div className="animate-pulse flex flex-col items-center">
