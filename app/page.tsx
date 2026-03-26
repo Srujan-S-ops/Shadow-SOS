@@ -72,7 +72,7 @@ export default function Home() {
                 onClick={() => triggerSOS('yellow')}
                 className="w-full relative group overflow-hidden rounded-full bg-yellow-500/10 border-2 border-yellow-500/50 hover:bg-yellow-500/20 text-yellow-500 font-bold py-3 transition-all duration-300 transform hover:scale-105 active:scale-95 flex flex-col items-center justify-center"
               >
-                <span className="text-lg">Vibe Check (Yellow)</span>
+                <span className="text-lg">Caution Alert</span>
                 <span className="text-xs font-normal opacity-70 mt-0.5">Log Uneasy Feeling</span>
               </button>
 
@@ -80,7 +80,7 @@ export default function Home() {
                 onClick={() => triggerSOS('orange')}
                 className="w-full relative group overflow-hidden rounded-full bg-orange-500/10 border-2 border-orange-500/50 hover:bg-orange-500/20 text-orange-500 font-bold py-3 transition-all duration-300 transform hover:scale-105 active:scale-95 flex flex-col items-center justify-center"
               >
-                <span className="text-lg">Potential Threat (Orange)</span>
+                <span className="text-lg">Potential Threat</span>
                 <span className="text-xs font-normal opacity-70 mt-0.5">Silent GPS Streaming</span>
               </button>
 
