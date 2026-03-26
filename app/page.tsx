@@ -5,10 +5,10 @@ import { useAppStore } from '@/lib/Store';
 import { useSensors } from '@/hooks/useSensors';
 import EmergencyOverlay from '@/components/EmergencyOverlay';
 import IncomingAlert from '@/components/IncomingAlert';
-import { Users, Map, PhoneCall, Footprints, Info, LogOut, MessageSquareWarning, MessageSquare } from 'lucide-react';
+import { Users, Map, PhoneCall, Footprints, Info, LogOut, MessageSquareWarning, MessageSquare, Inbox } from 'lucide-react';
 
 export default function Home() {
-  const { triggerSOS, userName, logout } = useAppStore();
+  const { triggerSOS, userName, logout, inbox } = useAppStore();
   
   // Initialize device sensor listeners (shake, voice)
   useSensors();
