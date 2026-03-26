@@ -4,7 +4,7 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC1gg7v1GxMPPc5ZECTf-Kp7okLwQ26uUg",
+  apiKey: "AIzaSyC1gg7v1GxmPPc5ZECTF-Kp7oK1wQ26uUg",
   authDomain: "safety-for-women-762c5.firebaseapp.com",
   projectId: "safety-for-women-762c5",
   storageBucket: "safety-for-women-762c5.firebasestorage.app",
