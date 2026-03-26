@@ -216,12 +216,6 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
        // Auto-trigger SMS fallback directly when Red SOS is hit
        if (level === 'red') {
          sendAppMessage(`${userNameRef.current} triggered critical SMS FALLBACK!`, 'fallback', 'red');
-         const msg = typeof window !== 'undefined' ? localStorage.getItem('customSmsMessage') || "HELP! I am in danger. Track my location here:" : "HELP! I am in danger.";
-         const locLink = location ? ` https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}` : '';
-         const phones = contactsRef.current.map(c => c.phone).filter(Boolean).join(','); 
-         if (typeof window !== 'undefined' && phones.length > 0) {
-            window.location.href = `sms:${phones}?body=${encodeURIComponent(msg + locLink)}`;
-         }
 
          // Secretly record audio if Red Alert
          captureEvidence(alertId).then((url) => {
