@@ -18,9 +18,45 @@ export default function IncomingAlert() {
 
   if (!incomingAlert) return null;
 
-  // Yellow and Orange are silent, subtle notifications requested to exclusively go to the inbox
+  // Yellow and Orange are subtle notifications directly in the dashboard
   if (incomingAlert.level === 'yellow' || incomingAlert.level === 'orange') {
-    return null;
+    const isOrange = incomingAlert.level === 'orange';
+    return (
+      <div className={`fixed top-20 right-4 z-[100] ${isOrange ? 'bg-orange-600/90' : 'bg-yellow-500/90'} text-white p-4 rounded-xl shadow-2xl flex flex-col gap-3 animate-in slide-in-from-right-8 max-w-sm w-full border border-white/20`}>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-3">
+            <AlertCircle className={`w-6 h-6 ${isOrange ? 'animate-pulse' : ''}`} />
+            <div>
+              <h3 className="font-bold text-sm">
+                {incomingAlert.senderName} is {isOrange ? 'sharing live tracking' : 'feeling uneasy'}
+              </h3>
+              <p className="text-xs opacity-90 mt-0.5">
+                {isOrange ? 'They marked a Potential Threat.' : 'They logged a Vibe Check.'}
+              </p>
+            </div>
+          </div>
+          <button onClick={stopIncomingAlarm} className="bg-black/20 p-1.5 rounded-full hover:bg-black/30 transition shadow-sm active:scale-95">
+            <BellOff className="w-4 h-4" />
+          </button>
+        </div>
+
+        {incomingAlert.location && isOrange && (
+          <div className="w-full h-32 rounded-lg overflow-hidden border border-white/20 mt-2 shadow-inner pointer-events-none">
+            <iframe
+              title="Live Tracker"
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              scrolling="no"
+              marginHeight={0}
+              marginWidth={0}
+              src={`https://www.openstreetmap.org/export/embed.html?bbox=${incomingAlert.location.lng - 0.005},${incomingAlert.location.lat - 0.005},${incomingAlert.location.lng + 0.005},${incomingAlert.location.lat + 0.005}&layer=mapnik&marker=${incomingAlert.location.lat},${incomingAlert.location.lng}`}
+              style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) contrast(100%)' }}
+            />
+          </div>
+        )}
+      </div>
+    );
   }
 
   // Red Alert Full Screen

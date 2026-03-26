@@ -50,15 +50,6 @@ export default function ToolsDashboard() {
           <span className="font-semibold text-white tracking-wide">AI Excuse Generator</span>
         </Link>
         
-        <Link href="/messages" className="bg-neutral-900 border border-neutral-800 p-5 rounded-2xl flex flex-col items-center text-center hover:bg-neutral-800 transition col-span-2 shadow-lg">
-          <div className="bg-rose-500/10 p-4 rounded-full mb-4 relative border border-rose-500/20">
-            <Inbox className="text-rose-400 w-7 h-7" />
-            {inbox && inbox.length > 0 && (
-               <span className="absolute top-2 right-2 w-3 h-3 bg-rose-500 rounded-full animate-pulse" />
-            )}
-          </div>
-          <span className="font-semibold text-white tracking-wide">Emergency Inbox</span>
-        </Link>
       </div>
     </div>
   );
