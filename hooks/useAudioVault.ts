@@ -40,16 +40,18 @@ export function useAudioVault() {
           stream.getTracks().forEach((track) => track.stop());
           
           try {
-            // Bypass Firebase Storage entirely! Encode video as Base64 Data URI
-            // since a 2.5s webm burst is under 200kb, it safely travels via Realtime DB!
             const reader = new FileReader();
             reader.readAsDataURL(videoBlob);
             reader.onloadend = () => {
               const base64Source = reader.result as string;
+              if (base64Source.length > 5000000) { // 5MB sanity check
+                alert("WARNING: Video payload is massive (" + Math.round(base64Source.length / 1000000) + " MB). Firebase might reject it.");
+              }
               resolve(base64Source);
             };
-          } catch (err) {
+          } catch (err: any) {
             console.error("MediaVault Encoding Error:", err);
+            alert("Encoding Error: " + err.message);
             resolve(null);
           }
         };
@@ -57,7 +59,6 @@ export function useAudioVault() {
         mediaRecorder.start();
         setIsRecording(true);
 
-        // Auto-stop after standard duration (5 seconds for faster upload in emergency)
         setTimeout(() => {
           if (mediaRecorder.state === 'recording') {
             mediaRecorder.stop();
@@ -66,9 +67,10 @@ export function useAudioVault() {
 
       });
 
-    } catch (err) {
+    } catch (err: any) {
       console.error("Camera/Mic permission denied or not supported.", err);
-      return null; // Gracefully fail
+      alert("Camera Start Failed: " + err.name + " - " + err.message);
+      return null;
     }
   }, []);
 
