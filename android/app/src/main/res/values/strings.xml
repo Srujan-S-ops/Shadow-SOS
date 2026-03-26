@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">HerGuard AI</string>
-    <string name="title_activity_main">HerGuard AI</string>
+    <string name="app_name">Raksha</string>
+    <string name="title_activity_main">Raksha</string>
     <string name="package_name">com.herguard.app</string>
     <string name="custom_url_scheme">com.herguard.app</string>
 </resources>

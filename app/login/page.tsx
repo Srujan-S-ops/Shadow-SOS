@@ -6,6 +6,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, isMockEnvironment } from '@/lib/firebase';
 import { LogIn } from 'lucide-react';
 import Link from 'next/link';
+import RakshaLogo from '@/components/RakshaLogo';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -40,8 +41,9 @@ export default function Login() {
   return (
     <div className="flex flex-col min-h-screen bg-black text-white px-6 justify-center">
       <div className="w-full max-w-sm mx-auto space-y-8">
-        <div className="text-center">
-          <h1 className="text-4xl font-extrabold text-red-500 mb-2 tracking-tight">HerGuard AI</h1>
+        <div className="text-center flex flex-col items-center">
+          <RakshaLogo className="w-20 h-20 text-rose-500 mb-4 drop-shadow-[0_0_15px_rgba(244,63,94,0.6)]" />
+          <h1 className="text-5xl font-extrabold text-white mb-3 tracking-tighter">Raksha</h1>
           <p className="text-gray-400">Sign in to sync your safety network</p>
         </div>
 

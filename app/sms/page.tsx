@@ -34,7 +34,7 @@ export default function SMSConfigPage() {
         </div>
         
         <p className="text-neutral-400 text-sm mb-6 leading-relaxed">
-          If you lose internet connection, HerGuard AI can open your phone's native SMS app as a fallback. 
+          If you lose internet connection, Raksha can open your phone's native SMS app as a fallback. 
           Configure the default message that will be sent to your trusted contacts. <br/><br/>
           <em>(We will automatically attach a Google Maps tracking link to the end of this message when triggered).</em>
         </p>

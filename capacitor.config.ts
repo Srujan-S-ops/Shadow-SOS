@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.herguard.app',
-  appName: 'HerGuard AI',
+  appName: 'Raksha',
   webDir: 'out'
 };
 
