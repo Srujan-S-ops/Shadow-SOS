@@ -67,7 +67,7 @@ export default function IncomingAlert() {
 
   // Red Alert Full Screen
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-red-950/80 backdrop-blur-xl animate-shake">
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-start overflow-y-auto py-12 bg-red-950/80 backdrop-blur-xl animate-shake">
       
       {/* Intense pulsing background effect */}
       <div className="absolute inset-0 bg-rose-600 mix-blend-overlay animate-pulse opacity-50" />
