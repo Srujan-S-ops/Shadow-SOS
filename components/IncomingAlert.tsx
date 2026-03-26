@@ -37,15 +37,31 @@ export default function IncomingAlert() {
 
         <div className="flex flex-col gap-4 w-full">
           {incomingAlert.location && (
-            <a
-              href={`https://maps.google.com/?q=${incomingAlert.location.lat},${incomingAlert.location.lng}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-white text-rose-600 w-full flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-slate-100 transition-colors"
-            >
-              <Navigation className="w-6 h-6" />
-              VIEW LIVE LOCATION
-            </a>
+            <div className="w-full flex md:flex-row flex-col gap-4">
+              <div className="w-full flex-1 rounded-2xl overflow-hidden border-2 border-slate-700 shadow-xl relative min-h-[200px] md:min-h-[250px]">
+                <iframe
+                  title="Live Tracking Map"
+                  width="100%"
+                  height="100%"
+                  frameBorder="0"
+                  scrolling="no"
+                  marginHeight={0}
+                  marginWidth={0}
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${incomingAlert.location.lng - 0.005},${incomingAlert.location.lat - 0.005},${incomingAlert.location.lng + 0.005},${incomingAlert.location.lat + 0.005}&layer=mapnik&marker=${incomingAlert.location.lat},${incomingAlert.location.lng}`}
+                  style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) contrast(100%)' }} // Night mode filter
+                />
+              </div>
+              <a
+                href={`https://maps.google.com/?q=${incomingAlert.location.lat},${incomingAlert.location.lng}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white text-rose-600 w-full md:w-auto flex items-center justify-center gap-3 py-4 md:px-8 rounded-xl font-bold text-lg shadow-xl hover:bg-slate-100 transition-colors"
+              >
+                <Navigation className="w-6 h-6" />
+                <span className="md:hidden">OPEN MAP APP</span>
+                <span className="hidden md:inline">OPEN GPS APP</span>
+              </a>
+            </div>
           )}
           
           <button

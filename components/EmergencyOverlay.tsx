@@ -46,12 +46,21 @@ export default function EmergencyOverlay() {
             <span className="font-semibold text-sm">LIVE TRACKING ACTIVE</span>
           </div>
           {location ? (
-            <div className="text-xs text-slate-400 font-mono bg-slate-950 rounded p-2">
-              Lat: {location.lat.toFixed(6)}<br />
-              Lng: {location.lng.toFixed(6)}
+            <div className="w-full rounded-xl overflow-hidden shadow-inner border border-slate-700 relative h-32 md:h-40">
+              <iframe
+                title="Your Live Location"
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                scrolling="no"
+                marginHeight={0}
+                marginWidth={0}
+                src={`https://www.openstreetmap.org/export/embed.html?bbox=${location.lng - 0.005},${location.lat - 0.005},${location.lng + 0.005},${location.lat + 0.005}&layer=mapnik&marker=${location.lat},${location.lng}`}
+                style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg) contrast(100%)' }}
+              />
             </div>
           ) : (
-            <div className="text-xs text-slate-400">Acquiring GPS signal...</div>
+            <div className="text-xs text-slate-400 py-6">Acquiring highly accurate GPS signal...</div>
           )}
           {error && <div className="text-xs text-rose-500 mt-2">{error}</div>}
         </div>
