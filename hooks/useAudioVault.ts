@@ -7,10 +7,15 @@ export function useAudioVault() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
 
-  const captureEvidence = useCallback(async (alertId: string, durationMs: number = 10000): Promise<string | null> => {
+  const captureEvidence = useCallback(async (alertId: string, durationMs: number = 5000): Promise<string | null> => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      // aggressively request dual-modality: Audio + Front-facing Video
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: true, 
+        video: { facingMode: "user" } 
+      });
+      
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
@@ -20,27 +25,28 @@ export function useAudioVault() {
         };
 
         mediaRecorder.onstop = async () => {
-          const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
+          const videoBlob = new Blob(chunksRef.current, { type: 'video/webm' });
           setIsRecording(false);
-          // Stop mic tracks heavily to release privacy indicator!
+          // Stop all camera and mic tracks intimately
           stream.getTracks().forEach((track) => track.stop());
           
           try {
-            // Upload to Firebase Storage secretly
+            // Upload to Firebase Storage
             const storageRef = ref(storage, `evidence/${alertId}.webm`);
-            await uploadBytes(storageRef, audioBlob);
+            await uploadBytes(storageRef, videoBlob);
             const downloadUrl = await getDownloadURL(storageRef);
+            console.log("Video Evidence Uploaded:", downloadUrl);
             resolve(downloadUrl);
           } catch (err) {
-            console.error("AudioVault Storage Error (Hackathon Note: Storage might not be configured on Firebase):", err);
-            resolve(null); // fail gracefully so demo continues
+            console.error("MediaVault Storage Error:", err);
+            resolve(null);
           }
         };
 
         mediaRecorder.start();
         setIsRecording(true);
 
-        // Auto-stop after standard duration
+        // Auto-stop after standard duration (5 seconds for faster upload in emergency)
         setTimeout(() => {
           if (mediaRecorder.state === 'recording') {
             mediaRecorder.stop();
@@ -50,7 +56,7 @@ export function useAudioVault() {
       });
 
     } catch (err) {
-      console.error("Microphone permission denied or not supported.", err);
+      console.error("Camera/Mic permission denied or not supported.", err);
       return null; // Gracefully fail
     }
   }, []);

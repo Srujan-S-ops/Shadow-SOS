@@ -43,15 +43,18 @@ export default function IncomingAlert() {
 
         <div className="flex flex-col gap-4 w-full">
           {incomingAlert.evidenceUrl && (
-            <a
-              href={incomingAlert.evidenceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-rose-500 text-white w-full flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-lg shadow-[0_0_20px_rgba(225,29,72,0.8)] hover:bg-rose-400 transition-colors animate-pulse"
-            >
-              <AlertCircle className="w-6 h-6" />
-              PLAY AUDIO EVIDENCE
-            </a>
+            <div className="w-full bg-black/50 border-2 border-rose-500 rounded-xl overflow-hidden shadow-[0_0_30px_rgba(225,29,72,0.6)] flex flex-col items-center">
+              <div className="bg-rose-600 text-white text-[10px] uppercase font-black tracking-widest px-4 py-1.5 w-full flex items-center justify-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                Live Camera Feed Captured
+              </div>
+              <video
+                src={incomingAlert.evidenceUrl}
+                controls
+                autoPlay
+                className="w-full max-h-[300px] object-cover"
+              />
+            </div>
           )}
 
           {incomingAlert.location && (
