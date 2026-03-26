@@ -35,7 +35,7 @@ export default function BottomNav() {
           className={`flex flex-col flex-1 items-center gap-1.5 transition-colors ${pathname === '/videos' ? 'text-amber-500' : 'text-neutral-500 hover:text-neutral-300'}`}
         >
           <PlaySquare className="w-5 h-5" />
-          <span className="text-[9px] uppercase font-bold tracking-widest">Videos</span>
+          <span className="text-[9px] uppercase font-bold tracking-widest">Tutorial</span>
         </Link>
 
         <Link 
@@ -47,6 +47,14 @@ export default function BottomNav() {
         </Link>
         
         <Link 
+          href="/shop" 
+          className={`flex flex-col flex-1 items-center gap-1.5 transition-colors ${pathname === '/shop' ? 'text-emerald-500' : 'text-neutral-500 hover:text-neutral-300'}`}
+        >
+          <ShoppingBag className="w-5 h-5" />
+          <span className="text-[9px] uppercase font-bold tracking-widest">Shop</span>
+        </Link>
+        
+        <Link 
           href="/tools" 
           className={`flex flex-col flex-1 items-center gap-1.5 transition-colors ${pathname === '/tools' ? 'text-cyan-400' : 'text-neutral-500 hover:text-neutral-300'}`}
         >
@@ -54,7 +62,7 @@ export default function BottomNav() {
           <span className="text-[9px] uppercase font-bold tracking-widest">Tools</span>
         </Link>
 
-        {/* 6th Button: GMaps Safe Route */}
+        {/* 7th Button: GMaps Safe Route */}
         <a 
           href="https://www.google.com/maps/dir/?api=1&destination=Police+Station"
           target="_blank"
