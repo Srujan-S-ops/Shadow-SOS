@@ -18,7 +18,10 @@ export async function POST(req: Request) {
     
     const model = genAI.getGenerativeModel({ 
       model: "gemini-2.5-flash",
-      systemInstruction: systemPrompt
+      systemInstruction: {
+        role: "system",
+        parts: [{ text: systemPrompt }]
+      }
     });
     
     // Convert standard chat message format to Gemini format
@@ -45,6 +48,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ reply: text });
   } catch (error: any) {
     console.error("Gemini API Error:", error);
-    return NextResponse.json({ error: error.message || "Failed to fetch response" }, { status: 500 });
+    return NextResponse.json({ error: error.message || "Failed to fetch response" }, { status: 400 });
   }
 }

@@ -44,7 +44,13 @@ export default function RakshaAIPage() {
         body: JSON.stringify({ messages: chatHistory })
       });
       
-      const data = await res.json();
+      const textResponse = await res.text();
+      let data;
+      try {
+        data = JSON.parse(textResponse);
+      } catch (e) {
+        throw new Error("Raksha AI server returned an invalid response. Please try again or check your API key.");
+      }
       
       if (!res.ok) {
         throw new Error(data.error || "Failed to connect to Raksha AI");

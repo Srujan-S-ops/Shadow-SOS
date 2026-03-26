@@ -88,7 +88,14 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
        if (typeof window !== 'undefined') {
          localStorage.setItem('userId', mockId);
          const savedContacts = localStorage.getItem('contacts');
-         if (savedContacts) setContacts(JSON.parse(savedContacts));
+         if (savedContacts) {
+           try {
+             setContacts(JSON.parse(savedContacts));
+           } catch (e) {
+             console.error("Failed to parse contacts from localStorage", e);
+             localStorage.removeItem('contacts');
+           }
+         }
        }
        return;
     }
